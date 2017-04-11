@@ -2,7 +2,6 @@ require './test/test_helper'
 require './lib/district_repository'
 
 class DistrictRepositoryTest < Minitest::Test
-
   attr_reader :file_name
 
   def setup
