@@ -2,7 +2,8 @@ require 'bigdecimal'
 require 'bigdecimal/util'
 
 class Enrollment
-  attr_reader :name, :kindergarten_participation
+  attr_reader :name
+  attr_accessor :kindergarten_participation
 
   def initialize(input)
     @name = input[:name]
@@ -14,7 +15,7 @@ class Enrollment
         kindergarten_participation[k] = truncate(v)
     end
   end
-  
+
   def kindergarten_participation_in_year(year)
     if kindergarten_participation.has_key? (year)
       truncate(kindergarten_participation[year])
