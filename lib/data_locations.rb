@@ -1,6 +1,6 @@
 module DataLocations
   ENROLLMENT = {
-    DROPOUT_RATES = "./data/"
+    # DROPOUT_RATES = "./data/"
   }
 end
 
