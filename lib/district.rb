@@ -6,7 +6,7 @@ class District
   end
 
   def name
-    result = @name.upcase
+    @name.upcase
   end
 
 end
