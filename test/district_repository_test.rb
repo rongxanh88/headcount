@@ -16,13 +16,8 @@ class DistrictRepositoryTest < Minitest::Test
 
   def test_load_data
     dr = DistrictRepository.new
-    assert dr.load_data(file_name)
+    assert dr.load_data({:enrollment => {kindergarten => file_name}})
   end
-
-  # def test_load_data
-  #   dr = DistrictRepository.new
-  #   assert dr.load_data({:enrollment => {kindergarten => file_name}})
-  # end
 
   def test_find_name
     dr = DistrictRepository.new

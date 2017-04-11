@@ -4,4 +4,9 @@ class District
   def initialize(input)
     @name = input[:name]
   end
+
+  def name
+    result = @name.upcase
+  end
+
 end
