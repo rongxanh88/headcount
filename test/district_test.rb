@@ -9,10 +9,10 @@ class DistrictTest < Minitest::Test
   end
 
   def test_it_exists
-    district = District.new(district_name)
-    assert_instance_of District, district
+    dr = District.new(district_name)
+    assert_instance_of District, dr
   end
-
+  
   def test_has_name
     district = District.new(district_name)
     assert_equal "ACADEMY 20", district.name
