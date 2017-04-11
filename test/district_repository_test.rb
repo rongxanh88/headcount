@@ -10,29 +10,40 @@ class DistrictRepositoryTest < Minitest::Test
   end
 
   def test_it_exists
-    district = DistrictRepository.new
-    assert_instance_of DistrictRepository, district
+    dr = DistrictRepository.new
+    assert_instance_of DistrictRepository, dr
   end
 
   def test_load_data
-    district = DistrictRepository.new
-    assert district.load_data(file_name)
+    dr = DistrictRepository.new
+    assert dr.load_data(file_name)
   end
 
+  # def test_load_data
+  #   dr = DistrictRepository.new
+  #   assert dr.load_data({:enrollment => {kindergarten => file_name}})
+  # end
+
   def test_find_name
-    district = DistrictRepository.new
-    data = district.load_data(file_name)
-    district_name = "ACADEMY 20"
-    result = district.find_by_name(district_name)
+    dr = DistrictRepository.new
+    data = dr.load_data(file_name)
+    dr_name = "ACADEMY 20"
+    result = dr.find_by_name(dr_name)
     assert_instance_of District, result
   end
 
   def test_find_all_matching
-    district = DistrictRepository.new
-    data = district.load_data(file_name)
+    dr = DistrictRepository.new
+    data = dr.load_data(file_name)
     partial_name = "AR"
     expected = ["ARICKAREE R-2", "ARRIBA-FLAGLER C-20"]
-    result = district.find_all_matching(partial_name)
+    result = dr.find_all_matching(partial_name)
     assert_equal expected, result
+  end
+
+  def test_holds_district_instances
+    d = DistrictRepository.new
+    result = {}
+    assert_equal result, d.drs
   end
 end
