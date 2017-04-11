@@ -11,7 +11,19 @@ class Enrollment
 
   def kindergarten_participation_by_year
     kindergarten_participation.each do |k,v|
-      kindergarten_participation[k] = v.to_d.truncate(3).to_f
+        kindergarten_participation[k] = truncate(v)
     end
+  end
+  
+  def kindergarten_participation_in_year(year)
+    if kindergarten_participation.has_key? (year)
+      truncate(kindergarten_participation[year])
+    else
+      nil
+    end
+  end
+
+  def truncate(rate)
+    rate.to_d.truncate(3).to_f
   end
 end

@@ -13,7 +13,7 @@ class EnrollmentTest < Minitest::Test
   end
 
   def test_it_exists
-    er = Enrollment.new
+    er = Enrollment.new(example)
     assert_instance_of Enrollment, er
   end
 
@@ -22,7 +22,7 @@ class EnrollmentTest < Minitest::Test
     assert_equal "ACADEMY 20", er.name
   end
 
-  def test__participation_in_year
+  def test_participation_in_year
     er = Enrollment.new(example)
     assert_equal 0.391, er.kindergarten_participation_in_year(2010)
   end
