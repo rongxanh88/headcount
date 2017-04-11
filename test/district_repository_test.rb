@@ -21,7 +21,7 @@ class DistrictRepositoryTest < Minitest::Test
 
   def test_find_name
     dr = DistrictRepository.new
-    data = dr.load_data({:enrollment => {:kindergarten => file_name}})
+    dr.load_data({:enrollment => {:kindergarten => file_name}})
     dr_name = "ACADEMY 20"
     result = dr.find_by_name(dr_name)
     assert_instance_of District, result
@@ -29,7 +29,7 @@ class DistrictRepositoryTest < Minitest::Test
 
   def test_find_all_matching
     dr = DistrictRepository.new
-    data = dr.load_data({:enrollment => {:kindergarten => file_name}})
+    dr.load_data({:enrollment => {:kindergarten => file_name}})
     partial_name = "AR"
     result = dr.find_all_matching(partial_name)
     assert_equal 3, result.size

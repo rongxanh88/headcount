@@ -15,24 +15,21 @@ class EnrollmentRepositoryTest < Minitest::Test
   end
 
   def test_load_data
-    er_repository = EnrollmentRepository.new
-    assert er_repository.load_data({:enrollment => {:kindergarten => file_name}})
+    er_repo = EnrollmentRepository.new
+    assert er_repo.load_data({:enrollment => {:kindergarten => file_name}})
   end
 
   def test_find_name
-    skip
-    er_repository = EnrollmentRepository.new
-    data = er_repository.load_data({:enrollment => {:kindergarten => file_name}})
+    er_repo = EnrollmentRepository.new
+    er_repo.load_data({:enrollment => {:kindergarten => file_name}})
     er_name = "ACADEMY 20"
-    result = er_repository.find_by_name(er_name)
+    result = er_repo.find_by_name(er_name)
     assert_instance_of Enrollment, result
   end
 
   def test_holds_district_instances
-    skip
     e = EnrollmentRepository.new
-    result = {}
-    assert_equal result, e.districts
+    assert_equal [], e.enrollments
   end
 
 end

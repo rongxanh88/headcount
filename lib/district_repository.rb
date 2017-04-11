@@ -1,8 +1,10 @@
 require_relative 'district'
+require_relative 'parser'
 require 'csv'
 require 'pry'
 
 class DistrictRepository
+  include Parser
   attr_accessor :districts
 
   def initialize
@@ -11,17 +13,7 @@ class DistrictRepository
 
   def load_data(files)
     kindergarten_file = files[:enrollment][:kindergarten]
-
-    contents = CSV.open(kindergarten_file, headers: true,
-                        header_converters: :symbol)
-
-    contents.each do |row|
-      row[:name] = row[:location]
-      district = District.new(row)
-      districts << district
-    end
-    districts.uniq! {|district| district.name}
-    true
+    @districts = Parser::Districts.get_data(kindergarten_file)
   end
 
   def find_by_name(district_name)
