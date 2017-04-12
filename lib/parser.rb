@@ -29,24 +29,12 @@ module Parser
 
       enrollments.uniq! {|enrollment| enrollment.name}
       contents.rewind
-      participation = Hash.new
-      previous_index = 0
       contents.each do |row|
-        index = enrollments.find_index {|enrollment| enrollment.name == row[:location]}
-        participation = Hash.new if index != previous_index
-
-        begin
-          participation[row[:timeframe].to_i] = row[:data].to_f
-        rescue TypeError
-          row[:data] = 0
-          puts row[:data]
-        ensure
-          # participation[row[:timeframe].to_i] = row[:data].to_f
-          # puts row[:data]
-        end
-      
-        enrollments[index].kindergarten_participation = participation
-        previous_index = index
+        index = enrollments.find_index {|enrollment|
+          enrollment.name == row[:location]
+        }
+          enrollments[index]
+          .kindergarten_participation[row[:timeframe].to_i] = row[:data].to_f
       end
       enrollments
     end
