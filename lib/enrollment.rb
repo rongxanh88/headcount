@@ -8,6 +8,9 @@ class Enrollment
   def initialize(input)
     @name = input[:name]
     @kindergarten_participation = input[:kindergarten_participation]
+    if kindergarten_participation.nil?
+      @kindergarten_participation = Hash.new
+    end
   end
 
   def kindergarten_participation_by_year
