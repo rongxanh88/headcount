@@ -1,7 +1,7 @@
-require 'bigdecimal'
-require 'bigdecimal/util'
+require_relative 'operations_module'
 
 class Enrollment
+  include Operations
   attr_reader :name
   attr_accessor :kindergarten_participation
 
@@ -25,9 +25,5 @@ class Enrollment
     else
       nil
     end
-  end
-
-  def truncate(rate)
-    rate.to_d.truncate(3).to_f
   end
 end
