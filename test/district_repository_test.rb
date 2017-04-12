@@ -39,4 +39,21 @@ class DistrictRepositoryTest < Minitest::Test
     d = DistrictRepository.new
     assert_equal [], d.districts
   end
+
+  def test_district_access_enrollment
+    dr = DistrictRepository.new
+    dr.load_data({:enrollment => {:kindergarten => file_name}})
+    dr_name = "ACADEMY 20"
+    district = dr.find_by_name(dr_name)
+    assert_instance_of Enrollment, district.enrollment
+  end
+
+  def test_enrollment_rate_for_year
+    dr = DistrictRepository.new
+    dr.load_data({:enrollment => {:kindergarten => file_name}})
+    dr_name = "ACADEMY 20"
+    district = dr.find_by_name(dr_name)
+    result = district.enrollment.kindergarten_participation_in_year(2010)
+    assert_equal 0.436, result
+  end
 end
