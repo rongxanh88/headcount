@@ -16,17 +16,12 @@ class DistrictRepositoryTest < Minitest::Test
 
   def test_load_data
     dr = DistrictRepository.new
-    assert dr.load_data(file_name)
+    assert dr.load_data({:enrollment => {:kindergarten => file_name}})
   end
-
-  # def test_load_data
-  #   dr = DistrictRepository.new
-  #   assert dr.load_data({:enrollment => {kindergarten => file_name}})
-  # end
 
   def test_find_name
     dr = DistrictRepository.new
-    data = dr.load_data(file_name)
+    dr.load_data({:enrollment => {:kindergarten => file_name}})
     dr_name = "ACADEMY 20"
     result = dr.find_by_name(dr_name)
     assert_instance_of District, result
@@ -34,16 +29,31 @@ class DistrictRepositoryTest < Minitest::Test
 
   def test_find_all_matching
     dr = DistrictRepository.new
-    data = dr.load_data(file_name)
+    dr.load_data({:enrollment => {:kindergarten => file_name}})
     partial_name = "AR"
-    expected = ["ARICKAREE R-2", "ARRIBA-FLAGLER C-20"]
     result = dr.find_all_matching(partial_name)
-    assert_equal expected, result
+    assert_equal 3, result.size
   end
 
   def test_holds_district_instances
     d = DistrictRepository.new
-    result = {}
-    assert_equal result, d.drs
+    assert_equal [], d.districts
+  end
+
+  def test_district_access_enrollment
+    dr = DistrictRepository.new
+    dr.load_data({:enrollment => {:kindergarten => file_name}})
+    dr_name = "ACADEMY 20"
+    district = dr.find_by_name(dr_name)
+    assert_instance_of Enrollment, district.enrollment
+  end
+
+  def test_enrollment_rate_for_year
+    dr = DistrictRepository.new
+    dr.load_data({:enrollment => {:kindergarten => file_name}})
+    dr_name = "ACADEMY 20"
+    district = dr.find_by_name(dr_name)
+    result = district.enrollment.kindergarten_participation_in_year(2010)
+    assert_equal 0.436, result
   end
 end
