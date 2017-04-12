@@ -51,7 +51,7 @@ class EnrollmentRepositoryTest < Minitest::Test
     er_name = "JEFFERSON COUNTY R-1"
     enrollment = er_repo.find_by_name(er_name)
     result = enrollment.kindergarten_participation_in_year(2012)
-    assert_equal e0.728, result
+    assert_equal 0.728, result
   end
 
 end

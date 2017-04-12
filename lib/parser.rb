@@ -1,42 +1,62 @@
 module Parser
 
   class Districts
-    def self.get_data(file_name)
-      districts = []
-      contents = CSV.open(file_name, headers: true,
-                        header_converters: :symbol)
+    class << self
+      def get_data(file_name)
+        contents = CSV.open(
+          file_name, headers: true, header_converters: :symbol)
 
-      contents.each do |row|
-        row[:name] = row[:location]
-        district = District.new(row)
-        districts << district
+        districts = get_districts_from(contents)
       end
-      districts.uniq! {|district| district.name}
+
+      def get_districts_from(contents)
+        districts = contents.collect do |row|
+          row[:name] = row[:location]
+          District.new(row)
+        end
+        districts.uniq! {|district| district.name}
+      end
     end
   end
 
   class Enrollments
-    def self.get_data(file_name)
-      enrollments = []
-      contents = CSV.open(file_name, headers: true,
-                        header_converters: :symbol)
+    class << self
+      def get_data(file_name)
+        contents = CSV.open(file_name, headers: true,
+                          header_converters: :symbol)
 
-      contents.each do |row|
-        row[:name] = row[:location]
-        enrollment = Enrollment.new(row)
-        enrollments << enrollment
+        enrollments = get_enrollments_from(contents)
+        contents.rewind
+        return add_participation_to_enrollments(contents, enrollments)
       end
 
-      enrollments.uniq! {|enrollment| enrollment.name}
-      contents.rewind
-      contents.each do |row|
-        index = enrollments.find_index {|enrollment|
-          enrollment.name == row[:location]
-        }
-          enrollments[index]
-          .kindergarten_participation[row[:timeframe].to_i] = row[:data].to_f
+      def get_enrollments_from(contents)
+        enrollments = contents.collect do |row|
+          row[:name] = row[:location]
+          Enrollment.new(row)
+        end
+        enrollments.uniq! {|enrollment| enrollment.name}
       end
-      enrollments
+
+      def add_participation_to_enrollments(contents, enrollments)
+        contents.each do |row|
+          index = enrollments.find_index { |enrollment|
+            enrollment.name == row[:location]
+          }
+            enrollments[index]
+              .kindergarten_participation[year(row)] = rate(row)
+        end
+        enrollments
+      end
+
+      def year(row)
+        row[:timeframe].to_i
+      end
+
+      def rate(row)
+        row[:data].to_f
+      end
+
     end
   end
 end
