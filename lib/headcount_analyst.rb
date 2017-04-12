@@ -12,12 +12,10 @@ class HeadcountAnalyst
   def kindergarten_participation_rate_variation(district1, other)
     enrollment1 = get_enrollment(district1)
     enrollment2 = get_enrollment(other[:against])
-    size_1 = enrollment1.kindergarten_participation.values.count
-    rate_1 = enrollment1.kindergarten_participation.values.reduce(0) {|sum,num| sum + num}
-    average_1 = rate_1 / size_1
-    size_2 = enrollment2.kindergarten_participation.values.count
-    rate_2 = enrollment2.kindergarten_participation.values.reduce(0) {|sum,num| sum + num}
-    average_2 = rate_2 / size_2
+    average_1 = average(
+      total_rates(enrollment1), total_num_of_values(enrollment1))
+    average_2 =
+      average(total_rates(enrollment2), total_num_of_values(enrollment2))
     truncate(average_1 / average_2)
   end
 
@@ -25,20 +23,14 @@ class HeadcountAnalyst
     enrollment1 = get_enrollment(district1)
     enrollment2 = get_enrollment(other[:against])
 
-    enrollment1.kindergarten_participation = enrollment1.kindergarten_participation.sort_by {|k,v| k}.to_h
-    enrollment2.kindergarten_participation = enrollment2.kindergarten_participation.sort_by {|k,v| k}.to_h
-    values1 = enrollment2.kindergarten_participation.values
-    values2 = enrollment1.kindergarten_participation.values
+    sort_enrollment_keys(enrollment1)
+    sort_enrollment_keys(enrollment2)
     keys = enrollment1.kindergarten_participation.keys
-    numbers = values2.map.each_with_index do |num, index|
-      num = num / values1[index]
-    end
+    numbers = calculate_comparison_for_values(
+      get_enrollment_values(enrollment1),
+      get_enrollment_values(enrollment2))
 
-    trend = {}
-    numbers.each_with_index do |num, index|
-      trend[keys[index]] = truncate(num)
-    end
-    trend
+    output_trend(keys, numbers)
   end
 
   def get_enrollment(district_name)
@@ -46,5 +38,30 @@ class HeadcountAnalyst
       district.name == district_name
     end
     district[0].enrollment
+  end
+
+  def sort_enrollment_keys(enrollment)
+    enrollment.kindergarten_participation =
+      enrollment.kindergarten_participation.sort_by {|k,v| k}.to_h
+  end
+
+  def get_enrollment_values(enrollment)
+    enrollment.kindergarten_participation.values
+  end
+
+  def output_trend(keys, values)
+    trend = {}
+    values.each_with_index do |num, index|
+      trend[keys[index]] = truncate(num)
+    end
+    trend
+  end
+
+  def total_rates(enrollment)
+    enrollment.kindergarten_participation.values.reduce(0) {|sum,num| sum + num}
+  end
+
+  def total_num_of_values(enrollment)
+    enrollment.kindergarten_participation.values.count
   end
 end
