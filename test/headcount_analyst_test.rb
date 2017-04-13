@@ -47,4 +47,9 @@ class HeadcountAnalystTest < Minitest::Test
     assert_equal name, result.name
   end
 
+  # def test_high_school_graduation_correlates_kindergarten_participation
+  #   repo = DistrictRepository.new
+  #   ha = HeadcountAnalyst.new(dr)
+  # end
+
 end
