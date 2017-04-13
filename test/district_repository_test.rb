@@ -7,8 +7,8 @@ class DistrictRepositoryTest < Minitest::Test
 
   def setup
     file_name = "./data/Kindergartners in full-day program.csv"
-    dr = DistrictRepository.new
-    dr.load_data({:enrollment => {:kindergarten => file_name}}
+    @dr = DistrictRepository.new
+    dr.load_data({:enrollment => {:kindergarten => file_name}})
   end
 
   def test_it_exists
