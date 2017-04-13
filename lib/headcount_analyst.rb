@@ -69,16 +69,41 @@ class HeadcountAnalyst
     enrollment.kindergarten_participation.values.count
   end
 
-  def kindergarten_participation_against_high_school_graduation(name)
-    enrollment = get_enrollment(name)
-    sort_enrollment_keys(enrollment)
-    keys = enrollment.high_school_graduation_rates.keys
-    numbers = calculate_comparison_for_values(
-      get_enrollment_values(enrollment),
-      get_graduation_values(enrollment))
+  def kindergarten_participation_against_high_school_graduation(district)
+    # enrollment = get_enrollment(district)
+    # state_enrollment = get_enrollment("COLORADO")
+
+    # state_kindergarten_values = get_enrollment_values(enrollment)
+    # state_enrollment_values = get_enrollment_values(state_enrollment)
+    district_kindergarten_variation = 
+      kindergarten_participation_rate_variation(
+        district, :against => "COLORADO")
+
+    district_graduation_variation = 
+      graduation_rate_variation(district, :against => "COLORADO")
+
+    result = district_kindergarten_variation / district_graduation_variation
+  end
+
+  def graduation_rate_variation(district1, other)
+    enrollment1 = get_enrollment(district1)
+    enrollment2 = get_enrollment(other[:against])
+    average_1 = average(
+      total_graduation_rates(enrollment1), total_num_of_graduation_values(enrollment1))
+    average_2 =
+      average(total_graduation_rates(enrollment2), total_num_of_graduation_values(enrollment2))
+    truncate(average_1 / average_2)
   end
 
   def get_graduation_values(enrollment)
     enrollment.high_school_graduation_rates.values
+  end
+
+  def total_graduation_rates(enrollment)
+    enrollment.high_school_graduation_rates.values.reduce(0) {|sum,num| sum + num}
+  end
+
+  def total_num_of_graduation_values(enrollment)
+    enrollment.high_school_graduation_rates.values.count
   end
 end

@@ -61,7 +61,7 @@ class HeadcountAnalystTest < Minitest::Test
     ha = HeadcountAnalyst.new(repo)
     name = "ACADEMY 20"
     result = ha.kindergarten_participation_against_high_school_graduation(name)
-    assert_equal 1.2, result
+    assert_equal 1.234, result
   end
 
   def test_kindergarten_participation_correlates_with_high_school_graduation
