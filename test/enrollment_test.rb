@@ -10,7 +10,7 @@ class EnrollmentTest < Minitest::Test
       :kindergarten_participation => {
         2010 => 0.3915, 2011 => 0.35356, 2012 => 0.2677}
       }
-    enrollment = Enrollment.new(kindergarten_data)
+    @enrollment = Enrollment.new(kindergarten_data)
   end
 
   def test_it_exists

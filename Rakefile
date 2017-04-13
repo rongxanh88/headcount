@@ -20,3 +20,13 @@ namespace :sanitation do
   desc "Check both line length and method length"
   task :all => [:lines, :methods]
 end
+
+task default: %w[test]
+
+task :test do
+  ruby "./test/enrollment_test.rb"
+  ruby "./test/enrollment_repository_test.rb"
+  ruby "./test/district_test.rb"
+  ruby "./test/district_repository_test.rb"
+  ruby "./test/headcount_analyst_test.rb"
+end

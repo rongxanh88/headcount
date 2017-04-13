@@ -1,5 +1,6 @@
 require './test/test_helper'
 require './lib/enrollment_repository'
+require 'pry'
 
 class EnrollmentRepositoryTest < Minitest::Test
 
@@ -40,7 +41,6 @@ class EnrollmentRepositoryTest < Minitest::Test
   end
 
   def test_load_two_files
-    skip
     repo = EnrollmentRepository.new
     file_1 = "./data/Kindergartners in full-day program.csv"
     file_2 = "./data/High school graduation rates.csv"
@@ -51,14 +51,13 @@ class EnrollmentRepositoryTest < Minitest::Test
   end
 
   def test_get_graduation_rate_all_years
-    skip
     repo = EnrollmentRepository.new
     file_1 = "./data/Kindergartners in full-day program.csv"
     file_2 = "./data/High school graduation rates.csv"
     repo.load_data({:enrollment => {
       :kindergarten => file_1, :high_school_graduation => file_2}})
     enrollment = repo.find_by_name("ACADEMY 20")
-    expected = { 
+    expected = {
       2010 => 0.895,
       2011 => 0.895,
       2012 => 0.889,
@@ -69,7 +68,6 @@ class EnrollmentRepositoryTest < Minitest::Test
   end
 
   def test_get_graduation_rate_in_year
-    skip
     repo = EnrollmentRepository.new
     file_1 = "./data/Kindergartners in full-day program.csv"
     file_2 = "./data/High school graduation rates.csv"
