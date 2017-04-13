@@ -43,6 +43,10 @@ class HeadcountAnalyst
   def sort_enrollment_keys(enrollment)
     enrollment.kindergarten_participation =
       enrollment.kindergarten_participation.sort_by {|k,v| k}.to_h
+    if !enrollment.high_school_graduation_rates.nil?
+      enrollment.high_school_graduation_rates =
+        enrollment.high_school_graduation_rates.sort_by {|k,v| k}.to_h
+    end
   end
 
   def get_enrollment_values(enrollment)
@@ -63,5 +67,18 @@ class HeadcountAnalyst
 
   def total_num_of_values(enrollment)
     enrollment.kindergarten_participation.values.count
+  end
+
+  def kindergarten_participation_against_high_school_graduation(name)
+    enrollment = get_enrollment(name)
+    sort_enrollment_keys(enrollment)
+    keys = enrollment.high_school_graduation_rates.keys
+    numbers = calculate_comparison_for_values(
+      get_enrollment_values(enrollment),
+      get_graduation_values(enrollment))
+  end
+
+  def get_graduation_values(enrollment)
+    enrollment.high_school_graduation_rates.values
   end
 end
