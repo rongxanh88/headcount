@@ -112,6 +112,9 @@ class HeadcountAnalyst
   end
 
   def kindergarten_participation_correlates_with_high_school_graduation(district)
+    if !district[:across].nil?
+      return correlation_across_districts(district[:across])
+    end
     name = district[:for]
     result = false
     if name == "STATEWIDE"
@@ -124,11 +127,22 @@ class HeadcountAnalyst
   end
 
   def statewide_correlation
-    correlation_results = []
-    district_repo.enrollments.each do |enrollment|
+    correlation_results = district_repo.enrollments.map do |enrollment|
       district = {:for => enrollment.name}
-      correlation_results << kindergarten_participation_correlates_with_high_school_graduation(
+      kindergarten_participation_correlates_with_high_school_graduation(
         district)
+    end
+    number_true = correlation_results.count {|x| x == true}
+    result = number_true.to_f / correlation_results.count
+    
+    result > 0.7 ? true : false
+  end
+
+  def correlation_across_districts(districts)
+    correlation_results = districts.map do |district|
+      name = {:for => district}
+      kindergarten_participation_correlates_with_high_school_graduation(
+        name)
     end
     number_true = correlation_results.count {|x| x == true}
     result = number_true.to_f / correlation_results.count

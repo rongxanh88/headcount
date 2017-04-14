@@ -12,26 +12,23 @@ class HeadcountAnalystTest < Minitest::Test
   end
 
   def test_it_initializes_with_district_repository
-    skip
     ha = HeadcountAnalyst.new(dr)
     assert_equal dr, ha.district_repo
   end
 
   def test_rate_variation
-    skip
     ha = HeadcountAnalyst.new(dr)
     district1 = "ACADEMY 20"
-    district2 = "COLORADO"
+    district2 = "Colorado"
     result = ha.kindergarten_participation_rate_variation(
       district1, :against => district2)
     assert_equal 0.766, result
   end
 
   def test_rate_variation_trend
-    skip
     ha = HeadcountAnalyst.new(dr)
     district1 = "ACADEMY 20"
-    district2 = "COLORADO"
+    district2 = "Colorado"
     expected = {
       2004 => 1.257, 2005 => 0.96, 2006 => 1.05, 2007 => 0.992,
       2008 => 0.717, 2009 => 0.652, 2010 => 0.681, 2011 => 0.727,
@@ -43,7 +40,6 @@ class HeadcountAnalystTest < Minitest::Test
   end
 
   def test_pull_enrollment_by_name
-    skip
     ha = HeadcountAnalyst.new(dr)
     name = 'ACADEMY 20'
     result = ha.get_enrollment(name)
@@ -52,7 +48,6 @@ class HeadcountAnalystTest < Minitest::Test
   end
 
   def test_high_school_graduation_correlates_kindergarten_participation
-    skip
     repo = DistrictRepository.new
     file1 = "./data/Kindergartners in full-day program.csv"
     file2 = "./data/High school graduation rates.csv"
@@ -66,7 +61,6 @@ class HeadcountAnalystTest < Minitest::Test
   end
 
   def test_kindergarten_participation_correlates_with_high_school_graduation
-    skip
     repo = DistrictRepository.new
     file1 = "./data/Kindergartners in full-day program.csv"
     file2 = "./data/High school graduation rates.csv"
@@ -94,6 +88,6 @@ class HeadcountAnalystTest < Minitest::Test
     district_4 = "ASPEN 1"
 
     assert ha.kindergarten_participation_correlates_with_high_school_graduation(
-      :across => ['district_1', 'district_2', 'district_3', 'district_4'])
+      :across => [district_1, district_2, district_3, district_4])
   end
 end
