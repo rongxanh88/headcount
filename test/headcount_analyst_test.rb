@@ -52,6 +52,7 @@ class HeadcountAnalystTest < Minitest::Test
   end
 
   def test_high_school_graduation_correlates_kindergarten_participation
+    skip
     repo = DistrictRepository.new
     file1 = "./data/Kindergartners in full-day program.csv"
     file2 = "./data/High school graduation rates.csv"
@@ -61,7 +62,7 @@ class HeadcountAnalystTest < Minitest::Test
     ha = HeadcountAnalyst.new(repo)
     name = "ACADEMY 20"
     result = ha.kindergarten_participation_against_high_school_graduation(name)
-    assert_equal 1.234, result
+    assert_equal 0.641, result
   end
 
   def test_kindergarten_participation_correlates_with_high_school_graduation
@@ -74,13 +75,12 @@ class HeadcountAnalystTest < Minitest::Test
     })
     ha = HeadcountAnalyst.new(repo)
     district = "ACADEMY 20"
-    assert ha.kindergarten_participation_correlates_with_high_school_graduation(for: district)
-    state = "COLORADO"
-    assert ha.kindergarten_participation_correlates_with_high_school_graduation(for: name)
+    assert ha.kindergarten_participation_correlates_with_high_school_graduation(:for => district)
+    state = "STATEWIDE"
+    refute ha.kindergarten_participation_correlates_with_high_school_graduation(:for => state)
   end
 
   def test_kindergarten_participation_correlates_with_high_school_graduation_multiple_districts
-    skip
     repo = DistrictRepository.new
     file1 = "./data/Kindergartners in full-day program.csv"
     file2 = "./data/High school graduation rates.csv"
@@ -88,10 +88,10 @@ class HeadcountAnalystTest < Minitest::Test
       :kindergarten => file1, :high_school_graduation => file2}
     })
     ha = HeadcountAnalyst.new(repo)
-    district_1 = ""
-    district_2 = ""
-    district_3 = ""
-    district_4 = ""
+    district_1 = "ACADEMY 20"
+    district_2 = "AGATE 300"
+    district_3 = "AKRON R-1"
+    district_4 = "ASPEN 1"
 
     assert ha.kindergarten_participation_correlates_with_high_school_graduation(
       :across => ['district_1', 'district_2', 'district_3', 'district_4'])

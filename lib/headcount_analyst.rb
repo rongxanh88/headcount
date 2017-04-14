@@ -16,6 +16,8 @@ class HeadcountAnalyst
       total_rates(enrollment1), total_num_of_values(enrollment1))
     average_2 =
       average(total_rates(enrollment2), total_num_of_values(enrollment2))
+
+    return 0 if average_2 == 0  
     truncate(average_1 / average_2)
   end
 
@@ -77,12 +79,13 @@ class HeadcountAnalyst
     # state_enrollment_values = get_enrollment_values(state_enrollment)
     district_kindergarten_variation = 
       kindergarten_participation_rate_variation(
-        district, :against => "COLORADO")
+        district, :against => "Colorado")
 
     district_graduation_variation = 
-      graduation_rate_variation(district, :against => "COLORADO")
+      graduation_rate_variation(district, :against => "Colorado")
 
-    result = district_kindergarten_variation / district_graduation_variation
+    return 0 if district_graduation_variation == 0
+    truncate(district_kindergarten_variation / district_graduation_variation)
   end
 
   def graduation_rate_variation(district1, other)
@@ -92,6 +95,7 @@ class HeadcountAnalyst
       total_graduation_rates(enrollment1), total_num_of_graduation_values(enrollment1))
     average_2 =
       average(total_graduation_rates(enrollment2), total_num_of_graduation_values(enrollment2))
+    return 0 if average_2 == 0
     truncate(average_1 / average_2)
   end
 
@@ -105,5 +109,30 @@ class HeadcountAnalyst
 
   def total_num_of_graduation_values(enrollment)
     enrollment.high_school_graduation_rates.values.count
+  end
+
+  def kindergarten_participation_correlates_with_high_school_graduation(district)
+    name = district[:for]
+    result = false
+    if name == "STATEWIDE"
+      result = statewide_correlation
+    else
+      correlation = kindergarten_participation_against_high_school_graduation(name)
+      result = true if correlation < 1.5 and correlation > 0.6
+    end
+    result
+  end
+
+  def statewide_correlation
+    correlation_results = []
+    district_repo.enrollments.each do |enrollment|
+      district = {:for => enrollment.name}
+      correlation_results << kindergarten_participation_correlates_with_high_school_graduation(
+        district)
+    end
+    number_true = correlation_results.count {|x| x == true}
+    result = number_true.to_f / correlation_results.count
+    
+    result > 0.7 ? true : false
   end
 end

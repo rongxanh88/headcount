@@ -1,6 +1,5 @@
 require 'bigdecimal'
 require 'bigdecimal/util'
-# require_relative 'enrollment'
 
 module Operations
 
