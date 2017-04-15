@@ -1,6 +1,7 @@
-class StatewideTest
+require 'pry'
 
-  attr_accessor :third_grade_data, :eighth_grade_data,
+class StatewideTest
+  attr_accessor :name, :third_grade_data, :eighth_grade_data,
                 :math_data, :reading_data, :writing_data
 
   def initialize(input)

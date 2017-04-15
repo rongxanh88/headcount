@@ -1,4 +1,6 @@
-require 'pry'
+require 'csv'
+require_relative 'statewide_test'
+
 module Parser
 
   class Districts
@@ -26,6 +28,7 @@ module Parser
       def get_data(file_name)
         contents = CSV.open(file_name, headers: true,
         header_converters: :symbol)
+        
         if file_name == "./data/Kindergartners in full-day program.csv"
           @enrollments = create_enrollments_from(contents)
           contents.rewind
@@ -76,8 +79,10 @@ module Parser
     end
   end
 
-  class StatewideTest
+  class StatewideTestParser
+
     class << self
+
       def get_data(file)
         contents = CSV.open(
           file, headers: true, header_converters: :symbol)
@@ -88,7 +93,7 @@ module Parser
           contents.rewind
           return add_third_grade_data(contents, @statewide_tests)
         when "./data/8th grade students scoring proficient or above on the CSAP_TCAP.csv"
-          return add_eigth_grade_data(contents, @statewide_tests)
+          return add_eighth_grade_data(contents, @statewide_tests)
         when "./data/Average proficiency on the CSAP_TCAP by race_ethnicity_ Math.csv"
           return add_math_data(contents, @statewide_tests)
         when "./data/Average proficiency on the CSAP_TCAP by race_ethnicity_ Reading.csv"
@@ -111,8 +116,13 @@ module Parser
           index = statewide_tests.find_index { |statewide_test|
             statewide_test.name == row[:location]
           }
+          if statewide_tests[index].third_grade_data.has_key?(row[:timeframe])
+            statewide_tests[index].third_grade_data[row[:timeframe]][row[:score].to_sym] =
+              row[:data].to_f
+          else
             statewide_tests[index]
-              .third_grade_data[row[:timeframe]] = {row[:score] => row[:data]}
+              .third_grade_data[row[:timeframe].to_i] = {row[:score].to_sym => row[:data].to_f}
+          end
         end
         statewide_tests
       end
@@ -122,45 +132,49 @@ module Parser
           index = statewide_tests.find_index { |statewide_test|
             statewide_test.name == row[:location]
           }
+          if statewide_tests[index].eighth_grade_data.has_key?(row[:timeframe])
+            statewide_tests[index].eighth_grade_data[row[:timeframe]][row[:score].to_sym] =
+              row[:data].to_f
+          else
             statewide_tests[index]
-              .eighth_grade_data[row[:timeframe]] = {row[:score] => row[:data]}
+              .eighth_grade_data[row[:timeframe].to_i] = {row[:score].to_sym => row[:data].to_f}
+          end
         end
         statewide_tests
       end
 
       def add_math_data(contents, statewide_tests)
-        contents.each do |row|
-          index = statewide_tests.find_index { |statewide_test|
-            statewide_test.name == row[:location]
-          }
-            statewide_tests[index]
-              .math_data[row[:race_ethnicity] = {row[:timeframe] = {math: row[:data]}}
-        end
+        # contents.each do |row|
+        #   index = statewide_tests.find_index { |statewide_test|
+        #     statewide_test.name == row[:location]
+        #   }
+        #     statewide_tests[index]
+        #       .math_data[row[:race_ethnicity]] = {row[:timeframe] = {math: row[:data]}}
+        # end
         statewide_tests
       end
 
       def add_reading_data(contents, statewide_tests)
-        contents.each do |row|
-          index = statewide_tests.find_index { |statewide_test|
-            statewide_test.name == row[:location]
-          }
-            statewide_tests[index]
-              .reading_data[row[:race_ethnicity] = {row[:timeframe] = {reading: row[:data]}}
-        end
+        # contents.each do |row|
+        #   index = statewide_tests.find_index { |statewide_test|
+        #     statewide_test.name == row[:location]
+        #   }
+        #     statewide_tests[index]
+        #       .reading_data[row[:race_ethnicity] = {row[:timeframe] = {reading: row[:data]}}
+        # end
         statewide_tests
       end
 
       def add_writing_data(contents, statewide_tests)
-        contents.each do |row|
-          index = statewide_tests.find_index { |statewide_test|
-            statewide_test.name == row[:location]
-          }
-            statewide_tests[index]
-              .writing_data[row[:race_ethnicity] = {row[:timeframe] = {writing: row[:data]}}
-        end
+        # contents.each do |row|
+        #   index = statewide_tests.find_index { |statewide_test|
+        #     statewide_test.name == row[:location]
+        #   }
+        #     statewide_tests[index]
+        #       .writing_data[row[:race_ethnicity] = {row[:timeframe] = {writing: row[:data]}}
+        # end
         statewide_tests
       end
-
     end
   end
 end
