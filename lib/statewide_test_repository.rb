@@ -20,4 +20,10 @@ class StatewideTestRepository
     @statewide_tests = Parser::StatewideTestParser.get_data(reading_file)
     @statewide_tests = Parser::StatewideTestParser.get_data(writing_file)
   end
+
+  def find_by_name(district_name)
+    statewide_tests.each do |statewide_test|
+      return statewide_test if statewide_test.name == district_name
+    end
+  end
 end

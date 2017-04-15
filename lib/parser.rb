@@ -116,8 +116,8 @@ module Parser
           index = statewide_tests.find_index { |statewide_test|
             statewide_test.name == row[:location]
           }
-          if statewide_tests[index].third_grade_data.has_key?(row[:timeframe])
-            statewide_tests[index].third_grade_data[row[:timeframe]][row[:score].to_sym] =
+          if statewide_tests[index].third_grade_data.has_key?(row[:timeframe].to_i)
+            statewide_tests[index].third_grade_data[row[:timeframe].to_i][row[:score].to_sym] =
               row[:data].to_f
           else
             statewide_tests[index]
@@ -191,7 +191,6 @@ module Parser
                 {row[:timeframe].to_i => {:writing => row[:data].to_f}}
           end
         end
-        binding.pry
         statewide_tests
       end
     end

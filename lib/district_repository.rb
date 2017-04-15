@@ -29,7 +29,7 @@ class DistrictRepository
   end
 
   def find_by_name(district_name)
-    district_name.upcase!
+    # district_name.upcase!
     districts.each do |district|
       return district if district.name == district_name
     end

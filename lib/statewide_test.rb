@@ -33,5 +33,17 @@ class StatewideTest
     end
   end
 
-  #methods below
+  def proficient_by_grade(grade)
+    if grade == 3
+      return third_grade_data
+    elsif grade == 8
+      return eighth_grade_data
+    else
+      raise Exception.new("UnknownDataError")
+    end
+  end
+
+  def proficient_by_race_or_ethnicity(race)
+    binding.pry
+  end
 end
