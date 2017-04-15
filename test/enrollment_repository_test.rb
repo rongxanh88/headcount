@@ -1,6 +1,5 @@
 require './test/test_helper'
 require './lib/enrollment_repository'
-require 'pry'
 
 class EnrollmentRepositoryTest < Minitest::Test
 
