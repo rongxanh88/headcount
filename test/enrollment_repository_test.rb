@@ -3,12 +3,18 @@ require './lib/enrollment_repository'
 
 class EnrollmentRepositoryTest < Minitest::Test
 
-  attr_reader :er
+  attr_reader :er, :repo
 
   def setup
-    file_name = "./data/Kindergartners in full-day program.csv"
+    file_1 = "./data/Kindergartners in full-day program.csv"
+    file_2 = "./data/High school graduation rates.csv"
+
     @er = EnrollmentRepository.new
-    er.load_data({:enrollment => {:kindergarten => file_name}})
+    er.load_data({:enrollment => {:kindergarten => file_1}})
+
+    @repo = EnrollmentRepository.new
+    repo.load_data({:enrollment => {
+      :kindergarten => file_1, :high_school_graduation => file_2}})
   end
 
   def test_it_exists
@@ -40,25 +46,13 @@ class EnrollmentRepositoryTest < Minitest::Test
   end
 
   def test_load_two_files
-    skip
-    repo = EnrollmentRepository.new
-    file_1 = "./data/Kindergartners in full-day program.csv"
-    file_2 = "./data/High school graduation rates.csv"
-    repo.load_data({:enrollment => {
-      :kindergarten => file_1, :high_school_graduation => file_2}})
     enrollment = repo.find_by_name("JEFFERSON COUNTY R-1")
     assert_instance_of Enrollment, enrollment
   end
 
   def test_get_graduation_rate_all_years
-    skip
-    repo = EnrollmentRepository.new
-    file_1 = "./data/Kindergartners in full-day program.csv"
-    file_2 = "./data/High school graduation rates.csv"
-    repo.load_data({:enrollment => {
-      :kindergarten => file_1, :high_school_graduation => file_2}})
     enrollment = repo.find_by_name("ACADEMY 20")
-    expected = { 
+    expected = {
       2010 => 0.895,
       2011 => 0.895,
       2012 => 0.889,
@@ -69,12 +63,6 @@ class EnrollmentRepositoryTest < Minitest::Test
   end
 
   def test_get_graduation_rate_in_year
-    skip
-    repo = EnrollmentRepository.new
-    file_1 = "./data/Kindergartners in full-day program.csv"
-    file_2 = "./data/High school graduation rates.csv"
-    repo.load_data({:enrollment => {
-      :kindergarten => file_1, :high_school_graduation => file_2}})
     enrollment = repo.find_by_name("ACADEMY 20")
     assert_equal 0.895, enrollment.graduation_rate_in_year(2010)
   end
