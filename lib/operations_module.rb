@@ -4,10 +4,12 @@ require 'bigdecimal/util'
 module Operations
 
   def truncate(rate)
+    return 0 if rate.nan?
     rate.to_d.truncate(3).to_f
   end
 
   def average(rate, size)
+    return 0 if size == 0
     rate / size
   end
 

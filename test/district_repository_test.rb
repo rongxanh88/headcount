@@ -15,11 +15,6 @@ class DistrictRepositoryTest < Minitest::Test
     assert_instance_of DistrictRepository, dr
   end
 
-  # def test_load_data
-  #   dr = DistrictRepository.new
-  #   assert dr.load_data({:enrollment => {:kindergarten => file_name}})
-  # end
-
   def test_find_name
     dr_name = "ACADEMY 20"
     result = dr.find_by_name(dr_name)
@@ -49,4 +44,10 @@ class DistrictRepositoryTest < Minitest::Test
     result = district.enrollment.kindergarten_participation_in_year(2010)
     assert_equal 0.436, result
   end
+
+  # def test_load_data
+  #   dr = DistrictRepository.new
+  #   assert dr.load_data({:enrollment => {:kindergarten => file_name}})
+  # end
+
 end

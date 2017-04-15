@@ -21,7 +21,7 @@ class DistrictRepository
     @districts = Parser::Districts.get_data(kindergarten_file)
     @enrollments = Parser::Enrollments.get_data(kindergarten_file)
 
-    if !high_school_file.nil?
+    if file_exists?(high_school_file)
       @enrollments = Parser::Enrollments.get_data(high_school_file)
     end
 
@@ -41,9 +41,16 @@ class DistrictRepository
     }
   end
 
+
+  private
+  
   def add_enrollment_to_district
     districts.each_with_index do |district, index|
       district.enrollment = enrollments[index]
     end
+  end
+
+  def file_exists?(file)
+    !file.nil?
   end
 end

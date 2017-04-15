@@ -3,12 +3,19 @@ require_relative '../lib/headcount_analyst'
 require_relative '../lib/district_repository'
 
 class HeadcountAnalystTest < Minitest::Test
-  attr_reader :dr
+  attr_reader :dr, :repo
 
   def setup
-    file_name = "./data/Kindergartners in full-day program.csv"
+    file1 = "./data/Kindergartners in full-day program.csv"
+    file2 = "./data/High school graduation rates.csv"
+
     @dr = DistrictRepository.new
-    dr.load_data({:enrollment => {:kindergarten => file_name}})
+    dr.load_data({:enrollment => {:kindergarten => file1}})
+
+    @repo = DistrictRepository.new
+    repo.load_data({:enrollment => {
+      :kindergarten => file1, :high_school_graduation => file2}
+    })
   end
 
   def test_it_initializes_with_district_repository
@@ -39,21 +46,7 @@ class HeadcountAnalystTest < Minitest::Test
     assert_equal expected, result
   end
 
-  def test_pull_enrollment_by_name
-    ha = HeadcountAnalyst.new(dr)
-    name = 'ACADEMY 20'
-    result = ha.get_enrollment(name)
-    assert_instance_of Enrollment, result
-    assert_equal name, result.name
-  end
-
   def test_high_school_graduation_correlates_kindergarten_participation
-    repo = DistrictRepository.new
-    file1 = "./data/Kindergartners in full-day program.csv"
-    file2 = "./data/High school graduation rates.csv"
-    repo.load_data({:enrollment => {
-      :kindergarten => file1, :high_school_graduation => file2}
-    })
     ha = HeadcountAnalyst.new(repo)
     name = "ACADEMY 20"
     result = ha.kindergarten_participation_against_high_school_graduation(name)
@@ -61,26 +54,17 @@ class HeadcountAnalystTest < Minitest::Test
   end
 
   def test_kindergarten_participation_correlates_with_high_school_graduation
-    repo = DistrictRepository.new
-    file1 = "./data/Kindergartners in full-day program.csv"
-    file2 = "./data/High school graduation rates.csv"
-    repo.load_data({:enrollment => {
-      :kindergarten => file1, :high_school_graduation => file2}
-    })
     ha = HeadcountAnalyst.new(repo)
     district = "ACADEMY 20"
-    assert ha.kindergarten_participation_correlates_with_high_school_graduation(:for => district)
     state = "STATEWIDE"
-    refute ha.kindergarten_participation_correlates_with_high_school_graduation(:for => state)
+
+    assert ha.kindergarten_participation_correlates_with_high_school_graduation(
+      :for => district)
+    refute ha.kindergarten_participation_correlates_with_high_school_graduation(
+      :for => state)
   end
 
   def test_kindergarten_participation_correlates_with_high_school_graduation_multiple_districts
-    repo = DistrictRepository.new
-    file1 = "./data/Kindergartners in full-day program.csv"
-    file2 = "./data/High school graduation rates.csv"
-    repo.load_data({:enrollment => {
-      :kindergarten => file1, :high_school_graduation => file2}
-    })
     ha = HeadcountAnalyst.new(repo)
     district_1 = "ACADEMY 20"
     district_2 = "AGATE 300"
@@ -90,4 +74,12 @@ class HeadcountAnalystTest < Minitest::Test
     assert ha.kindergarten_participation_correlates_with_high_school_graduation(
       :across => [district_1, district_2, district_3, district_4])
   end
+
+  # def test_pull_enrollment_by_name
+  #   ha = HeadcountAnalyst.new(dr)
+  #   name = 'ACADEMY 20'
+  #   result = ha.get_enrollment(name)
+  #   assert_instance_of Enrollment, result
+  #   assert_equal name, result.name
+  # end
 end
