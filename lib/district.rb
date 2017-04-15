@@ -8,8 +8,4 @@ class District
     @enrollment = nil
   end
 
-  def name
-    @name.upcase
-  end
-
 end

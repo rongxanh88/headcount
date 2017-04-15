@@ -17,13 +17,19 @@ class DistrictRepository
 
   def load_data(files)
     kindergarten_file = files[:enrollment][:kindergarten]
+    high_school_file = files[:enrollment][:high_school_graduation]
     @districts = Parser::Districts.get_data(kindergarten_file)
     @enrollments = Parser::Enrollments.get_data(kindergarten_file)
+
+    if file_exists?(high_school_file)
+      @enrollments = Parser::Enrollments.get_data(high_school_file)
+    end
+
     add_enrollment_to_district
   end
 
   def find_by_name(district_name)
-    district_name.upcase!
+    # district_name.upcase!
     districts.each do |district|
       return district if district.name == district_name
     end
@@ -35,9 +41,16 @@ class DistrictRepository
     }
   end
 
+
+  private
+  
   def add_enrollment_to_district
     districts.each_with_index do |district, index|
       district.enrollment = enrollments[index]
     end
+  end
+
+  def file_exists?(file)
+    !file.nil?
   end
 end
