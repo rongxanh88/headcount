@@ -75,4 +75,92 @@ module Parser
 
     end
   end
+
+  class StatewideTest
+    class << self
+      def get_data(file)
+        contents = CSV.open(
+          file, headers: true, header_converters: :symbol)
+
+        case file
+        when "./data/3rd grade students scoring proficient or above on the CSAP_TCAP.csv"
+          @statewide_tests = create_statewide_tests_from(contents)
+          contents.rewind
+          return add_third_grade_data(contents, @statewide_tests)
+        when "./data/8th grade students scoring proficient or above on the CSAP_TCAP.csv"
+          return add_eigth_grade_data(contents, @statewide_tests)
+        when "./data/Average proficiency on the CSAP_TCAP by race_ethnicity_ Math.csv"
+          return add_math_data(contents, @statewide_tests)
+        when "./data/Average proficiency on the CSAP_TCAP by race_ethnicity_ Reading.csv"
+          return add_reading_data(contents, @statewide_tests)
+        when "./data/Average proficiency on the CSAP_TCAP by race_ethnicity_ Writing.csv"
+          return add_writing_data(contents, @statewide_tests)
+        end
+      end
+
+      def create_statewide_tests_from(contents)
+        statewide_tests = contents.collect do |row|
+          row[:name] = row[:location]
+          StatewideTest.new(row)
+        end
+        statewide_tests.uniq! {|statewide_test| statewide_test.name}
+      end
+
+      def add_third_grade_data(contents, statewide_tests)
+        contents.each do |row|
+          index = statewide_tests.find_index { |statewide_test|
+            statewide_test.name == row[:location]
+          }
+            statewide_tests[index]
+              .third_grade_data[row[:timeframe]] = {row[:score] => row[:data]}
+        end
+        statewide_tests
+      end
+      
+      def add_eighth_grade_data(contents, statewide_tests)
+        contents.each do |row|
+          index = statewide_tests.find_index { |statewide_test|
+            statewide_test.name == row[:location]
+          }
+            statewide_tests[index]
+              .eighth_grade_data[row[:timeframe]] = {row[:score] => row[:data]}
+        end
+        statewide_tests
+      end
+
+      def add_math_data(contents, statewide_tests)
+        contents.each do |row|
+          index = statewide_tests.find_index { |statewide_test|
+            statewide_test.name == row[:location]
+          }
+            statewide_tests[index]
+              .math_data[row[:race_ethnicity] = {row[:timeframe] = {math: row[:data]}}
+        end
+        statewide_tests
+      end
+
+      def add_reading_data(contents, statewide_tests)
+        contents.each do |row|
+          index = statewide_tests.find_index { |statewide_test|
+            statewide_test.name == row[:location]
+          }
+            statewide_tests[index]
+              .reading_data[row[:race_ethnicity] = {row[:timeframe] = {reading: row[:data]}}
+        end
+        statewide_tests
+      end
+
+      def add_writing_data(contents, statewide_tests)
+        contents.each do |row|
+          index = statewide_tests.find_index { |statewide_test|
+            statewide_test.name == row[:location]
+          }
+            statewide_tests[index]
+              .writing_data[row[:race_ethnicity] = {row[:timeframe] = {writing: row[:data]}}
+        end
+        statewide_tests
+      end
+
+    end
+  end
 end
