@@ -144,35 +144,54 @@ module Parser
       end
 
       def add_math_data(contents, statewide_tests)
-        # contents.each do |row|
-        #   index = statewide_tests.find_index { |statewide_test|
-        #     statewide_test.name == row[:location]
-        #   }
-        #     statewide_tests[index]
-        #       .math_data[row[:race_ethnicity]] = {row[:timeframe] = {math: row[:data]}}
-        # end
+        contents.each do |row|
+          index = statewide_tests.find_index { |statewide_test|
+            statewide_test.name == row[:location]
+          }
+          if statewide_tests[index].math_data.has_key?(row[:race_ethnicity].to_sym)
+            statewide_tests[index].math_data[row[:race_ethnicity].to_sym][row[:timeframe].to_i] =
+              {:math => row[:data].to_f}
+          else
+            statewide_tests[index]
+              .math_data[row[:race_ethnicity].to_sym] = 
+                {row[:timeframe].to_i => {:math => row[:data].to_f}}
+          end
+        end
         statewide_tests
       end
 
       def add_reading_data(contents, statewide_tests)
-        # contents.each do |row|
-        #   index = statewide_tests.find_index { |statewide_test|
-        #     statewide_test.name == row[:location]
-        #   }
-        #     statewide_tests[index]
-        #       .reading_data[row[:race_ethnicity] = {row[:timeframe] = {reading: row[:data]}}
-        # end
+        contents.each do |row|
+          index = statewide_tests.find_index { |statewide_test|
+            statewide_test.name == row[:location]
+          }
+          if statewide_tests[index].reading_data.has_key?(row[:race_ethnicity].to_sym)
+            statewide_tests[index].reading_data[row[:race_ethnicity].to_sym][row[:timeframe].to_i] =
+              {:reading => row[:data].to_f}
+          else
+            statewide_tests[index]
+              .reading_data[row[:race_ethnicity].to_sym] = 
+                {row[:timeframe].to_i => {:reading => row[:data].to_f}}
+          end
+        end
         statewide_tests
       end
 
       def add_writing_data(contents, statewide_tests)
-        # contents.each do |row|
-        #   index = statewide_tests.find_index { |statewide_test|
-        #     statewide_test.name == row[:location]
-        #   }
-        #     statewide_tests[index]
-        #       .writing_data[row[:race_ethnicity] = {row[:timeframe] = {writing: row[:data]}}
-        # end
+        contents.each do |row|
+          index = statewide_tests.find_index { |statewide_test|
+            statewide_test.name == row[:location]
+          }
+          if statewide_tests[index].writing_data.has_key?(row[:race_ethnicity].to_sym)
+            statewide_tests[index].writing_data[row[:race_ethnicity].to_sym][row[:timeframe].to_i] =
+              {:writing => row[:data].to_f}
+          else
+            statewide_tests[index]
+              .writing_data[row[:race_ethnicity].to_sym] = 
+                {row[:timeframe].to_i => {:writing => row[:data].to_f}}
+          end
+        end
+        binding.pry
         statewide_tests
       end
     end

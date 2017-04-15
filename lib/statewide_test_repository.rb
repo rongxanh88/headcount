@@ -16,5 +16,8 @@ class StatewideTestRepository
     writing_file = files[:statewide_testing][:writing]
     @statewide_tests = Parser::StatewideTestParser.get_data(third_grade_file)
     @statewide_tests = Parser::StatewideTestParser.get_data(eighth_grade_file)
+    @statewide_tests = Parser::StatewideTestParser.get_data(math_file)
+    @statewide_tests = Parser::StatewideTestParser.get_data(reading_file)
+    @statewide_tests = Parser::StatewideTestParser.get_data(writing_file)
   end
 end
