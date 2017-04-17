@@ -23,21 +23,21 @@ class StatewideTestRepositoryTest < Minitest::Test
 
   def test_load_data
     skip
-    third_grade_file = "./data/3rd grade students scoring proficient or above on the CSAP_TCAP.csv"
-    eighth_grade_file = "./data/8th grade students scoring proficient or above on the CSAP_TCAP.csv"
-    math_file = "./data/Average proficiency on the CSAP_TCAP by race_ethnicity_ Math.csv"
-    reading_file = "./data/Average proficiency on the CSAP_TCAP by race_ethnicity_ Reading.csv"
-    writing_file = "./data/Average proficiency on the CSAP_TCAP by race_ethnicity_ Writing.csv"
-    @str = StatewideTestRepository.new
-    str.load_data({
-      :statewide_testing => {
-      :third_grade => third_grade_file,
-      :eighth_grade => eighth_grade_file,
-      :math => math_file,
-      :reading => reading_file,
-      :writing => writing_file
-      }
-    })
+    # third_grade_file = "./data/3rd grade students scoring proficient or above on the CSAP_TCAP.csv"
+    # eighth_grade_file = "./data/8th grade students scoring proficient or above on the CSAP_TCAP.csv"
+    # math_file = "./data/Average proficiency on the CSAP_TCAP by race_ethnicity_ Math.csv"
+    # reading_file = "./data/Average proficiency on the CSAP_TCAP by race_ethnicity_ Reading.csv"
+    # writing_file = "./data/Average proficiency on the CSAP_TCAP by race_ethnicity_ Writing.csv"
+    # @str = StatewideTestRepository.new
+    # str.load_data({
+    #   :statewide_testing => {
+    #   :third_grade => third_grade_file,
+    #   :eighth_grade => eighth_grade_file,
+    #   :math => math_file,
+    #   :reading => reading_file,
+    #   :writing => writing_file
+    #   }
+    # })
   end
   
   def test_find_by_name
@@ -65,30 +65,23 @@ class StatewideTestRepositoryTest < Minitest::Test
   def test_get_scores_by_race
     district = str.find_by_name("ACADEMY 20")
     expected = {
-      2011 => {math: 0.816, reading: 0.897, writing: 0.826},
-      2012 => {math: 0.818, reading: 0.893, writing: 0.808},
-      2013 => {math: 0.805, reading: 0.901, writing: 0.810},
-      2014 => {math: 0.800, reading: 0.855, writing: 0.789}
+      2011=>{:math=>0.816, :reading=>0.897, :writing=>0.826},
+      2012=>{:math=>0.818, :reading=>0.893, :writing=>0.808},
+      2013=>{:math=>0.805, :reading=>0.901, :writing=>0.81},
+      2014=>{:math=>0.8, :reading=>0.855, :writing=>0.789}
     }
     result = district.proficient_by_race_or_ethnicity(:Asian)
 
     assert_equal expected, result
   end
 
-  # def test_get_scores_for_unknown_race
-  #   skip
-  #   bad_result = str.proficient_by_race_or_ethnicity(:brown)
+  def test_proficiency_by_subject_grade_and_year
+    skip
+    subject, grade, year = :math, 3, 2008
+    result = str.proficient_for_subject_by_grade_in_year(subject, grade, year)
 
-  #   assert_equal UnknownRaceError, bad_result
-  # end
-
-  # def test_proficiency_by_subject_grade_and_year
-  #   skip
-  #   subject, grade, year = :math, 3, 2008
-  #   result = str.proficient_for_subject_by_grade_in_year(subject, grade, year)
-
-  #   assert_equal 0.857, result
-  # end
+    assert_equal 0.857, result
+  end
 
   # def test_proficiency_by_subject_race_and_year
   #   skip
@@ -106,5 +99,14 @@ class StatewideTestRepositoryTest < Minitest::Test
 
   #   assert_equal UnknownDataError, bad_result
   #   assert_equal UnknownDataError, another_result
+  # end
+
+#Old Tests
+
+  # def test_get_scores_for_unknown_race
+  #   district = str.find_by_name("ACADEMY 20")
+  #   bad_result = district.proficient_by_race_or_ethnicity(:brown)
+
+  #   assert_equal UnknownRaceError, bad_result
   # end
 end
