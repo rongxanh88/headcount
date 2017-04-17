@@ -76,6 +76,7 @@ class StatewideTestRepositoryTest < Minitest::Test
   end
 
   def test_proficiency_by_subject_grade_and_year
+    skip
     subject, grade, year = :math, 3, 2008
     result = str.proficient_for_subject_by_grade_in_year(subject, grade, year)
 

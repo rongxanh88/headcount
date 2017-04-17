@@ -8,31 +8,11 @@ class StatewideTest
 
   def initialize(input)
     @name = input[:name]
-
-    @third_grade_data = input[:third_grade]
-    if third_grade_data.nil?
-      @third_grade_data = Hash.new
-    end
-
-    @eighth_grade_data = input[:eighth_grade]
-    if eighth_grade_data.nil?
-      @eighth_grade_data = Hash.new
-    end
-
-    @math_data = input[:math]
-    if math_data.nil?
-      @math_data = Hash.new
-    end
-
-    @reading_data = input[:reading]
-    if reading_data.nil?
-      @reading_data = Hash.new
-    end
-
-    @writing_data = input[:writing]
-    if writing_data.nil?
-      @writing_data = Hash.new
-    end
+    @third_grade_data = input[:third_grade] || Hash.new
+    @eighth_grade_data = input[:eighth_grade] || Hash.new
+    @math_data = input[:math] || Hash.new
+    @reading_data = input[:reading] || Hash.new
+    @writing_data = input[:writing] || Hash.new
   end
 
   def proficient_by_grade(grade)
@@ -52,7 +32,6 @@ class StatewideTest
     if combo[race].nil?
       raise Exception.new("UnknownRaceError")
     end
-    
     combo[race].each do |k,v|
       v = v.to_a
       v << self.reading_data[race][k].to_a.flatten
@@ -76,6 +55,6 @@ class StatewideTest
       raise Exception.new("UnknownDataError")
     end
 
-    
+
   end
 end
