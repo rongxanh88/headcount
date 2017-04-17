@@ -1,4 +1,5 @@
 require_relative 'parser'
+require_relative 'statewide_test'
 require 'pry'
 
 class StatewideTestRepository
