@@ -21,12 +21,7 @@ class DistrictRepository
     kindergarten_file = files[:enrollment][:kindergarten]
     high_school_file = files[:enrollment][:high_school_graduation]
     @districts = Parser::Districts.get_data(kindergarten_file)
-    @enrollments = Parser::Enrollments.get_data(kindergarten_file)
-
-    if file_exists?(high_school_file)
-      @enrollments = Parser::Enrollments.get_data(high_school_file)
-    end
-
+    @enrollments.load_data(files)
     add_enrollment_to_district
 
     if file_exists?(files[:statewide_testing])
@@ -53,7 +48,7 @@ class DistrictRepository
   
   def add_enrollment_to_district
     districts.each_with_index do |district, index|
-      district.enrollment = enrollments[index]
+      district.enrollment = enrollments.enrollments[index]
     end
   end
 

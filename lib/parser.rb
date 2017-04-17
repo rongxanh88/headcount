@@ -116,12 +116,12 @@ module Parser
           index = statewide_tests.find_index { |statewide_test|
             statewide_test.name == row[:location]
           }
-          if statewide_tests[index].third_grade_data.has_key?(row[:timeframe].to_i)
-            statewide_tests[index].third_grade_data[row[:timeframe].to_i][row[:score].downcase.to_sym] =
-              row[:data].to_f
+          if statewide_tests[index].third_grade_data.has_key?(year(row))
+            statewide_tests[index].third_grade_data[year(row)][subject(row)] =
+              data(row)
           else
             statewide_tests[index]
-              .third_grade_data[row[:timeframe].to_i] = {row[:score].downcase.to_sym => row[:data].to_f}
+              .third_grade_data[year(row)] = {subject(row) => data(row)}
           end
         end
         statewide_tests
@@ -132,12 +132,12 @@ module Parser
           index = statewide_tests.find_index { |statewide_test|
             statewide_test.name == row[:location]
           }
-          if statewide_tests[index].eighth_grade_data.has_key?(row[:timeframe].to_i)
-            statewide_tests[index].eighth_grade_data[row[:timeframe].to_i][row[:score].downcase.to_sym] =
-              row[:data].to_f
+          if statewide_tests[index].eighth_grade_data.has_key?(year(row))
+            statewide_tests[index].eighth_grade_data[year(row)][subject(row)] =
+              data(row)
           else
             statewide_tests[index]
-              .eighth_grade_data[row[:timeframe].to_i] = {row[:score].downcase.to_sym => row[:data].to_f}
+              .eighth_grade_data[year(row)] = {subject(row) => data(row)}
           end
         end
         statewide_tests
@@ -148,13 +148,13 @@ module Parser
           index = statewide_tests.find_index { |statewide_test|
             statewide_test.name == row[:location]
           }
-          if statewide_tests[index].math_data.has_key?(row[:race_ethnicity].downcase.to_sym)
-            statewide_tests[index].math_data[row[:race_ethnicity].downcase.to_sym][row[:timeframe].to_i] =
-              {:math => row[:data].to_f}
+          if statewide_tests[index].math_data.has_key?(race_ethnicity(row))
+            statewide_tests[index].math_data[race_ethnicity(row)][year(row)] =
+              {:math => data(row)}
           else
             statewide_tests[index]
-              .math_data[row[:race_ethnicity].downcase.to_sym] = 
-                {row[:timeframe].to_i => {:math => row[:data].to_f}}
+              .math_data[race_ethnicity(row)] = 
+                {year(row) => {:math => data(row)}}
           end
         end
         statewide_tests
@@ -165,13 +165,13 @@ module Parser
           index = statewide_tests.find_index { |statewide_test|
             statewide_test.name == row[:location]
           }
-          if statewide_tests[index].reading_data.has_key?(row[:race_ethnicity].downcase.to_sym)
-            statewide_tests[index].reading_data[row[:race_ethnicity].downcase.to_sym][row[:timeframe].to_i] =
-              {:reading => row[:data].to_f}
+          if statewide_tests[index].reading_data.has_key?(race_ethnicity(row))
+            statewide_tests[index].reading_data[race_ethnicity(row)][year(row)] =
+              {:reading => data(row)}
           else
             statewide_tests[index]
-              .reading_data[row[:race_ethnicity].downcase.to_sym] = 
-                {row[:timeframe].to_i => {:reading => row[:data].to_f}}
+              .reading_data[race_ethnicity(row)] = 
+                {year(row) => {:reading => data(row)}}
           end
         end
         statewide_tests
@@ -182,17 +182,38 @@ module Parser
           index = statewide_tests.find_index { |statewide_test|
             statewide_test.name == row[:location]
           }
-          if statewide_tests[index].writing_data.has_key?(row[:race_ethnicity].downcase.to_sym)
-            statewide_tests[index].writing_data[row[:race_ethnicity].downcase.to_sym][row[:timeframe].to_i] =
-              {:writing => row[:data].to_f}
+          if has_race_key_for_writing_data?(statewide_tests[index], row)
+            statewide_tests[index].writing_data[race_ethnicity(row)][year(row)] =
+              {:writing => data(row)}
           else
             statewide_tests[index]
-              .writing_data[row[:race_ethnicity].downcase.to_sym] = 
-                {row[:timeframe].to_i => {:writing => row[:data].to_f}}
+              .writing_data[race_ethnicity(row)] = 
+                {year(row) => {:writing => data(row)}}
           end
         end
         statewide_tests
       end
+
+      def has_race_key_for_writing_data?(statewide_test, row)
+        statewide_test.writing_data.has_key?(race_ethnicity(row))
+      end
+
+      def race_ethnicity(row)
+        row[:race_ethnicity].downcase.to_sym
+      end
+
+      def year(row)
+        row[:timeframe].to_i
+      end
+
+      def subject(row)
+        row[:score].downcase.to_sym
+      end
+
+      def data(row)
+        row[:data].to_f
+      end
+
     end
   end
 end

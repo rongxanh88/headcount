@@ -20,8 +20,28 @@ class StatewideTestRepositoryTest < Minitest::Test
       }
     })
   end
+
+  def test_load_data
+    skip
+    third_grade_file = "./data/3rd grade students scoring proficient or above on the CSAP_TCAP.csv"
+    eighth_grade_file = "./data/8th grade students scoring proficient or above on the CSAP_TCAP.csv"
+    math_file = "./data/Average proficiency on the CSAP_TCAP by race_ethnicity_ Math.csv"
+    reading_file = "./data/Average proficiency on the CSAP_TCAP by race_ethnicity_ Reading.csv"
+    writing_file = "./data/Average proficiency on the CSAP_TCAP by race_ethnicity_ Writing.csv"
+    @str = StatewideTestRepository.new
+    str.load_data({
+      :statewide_testing => {
+      :third_grade => third_grade_file,
+      :eighth_grade => eighth_grade_file,
+      :math => math_file,
+      :reading => reading_file,
+      :writing => writing_file
+      }
+    })
+  end
   
   def test_find_by_name
+    skip
     district = str.find_by_name("ACADEMY 20")
 
     assert_instance_of StatewideTest, district
@@ -74,19 +94,21 @@ class StatewideTestRepositoryTest < Minitest::Test
 
 
 #Old Tests
-  # def test_proficiency_with_invalid_parameter
-  #   skip
-  #   subject, race, year = :science, :brown, 2018
-  #   bad_result = str.proficient_for_subject_by_race_in_year(subject, race, year)
-  #   another_result = str.proficient_for_subject_by_grade_in_year(subject, grade, year)
+  def test_proficiency_with_invalid_parameter
+    skip
+    subject, race, year = :science, :brown, 2018
+    district = str.find_by_name("ACADEMY 20")
+    assert_raises UnknownDataError do
+      district.proficient_for_subject_by_race_in_year(subject, race, year)
+      district.proficient_for_subject_by_grade_in_year(subject, grade, year)
+    end
+  end
 
-  #   assert_equal UnknownDataError, bad_result
-  #   assert_equal UnknownDataError, another_result
-  # end
-
-  # def test_get_scores_for_unknown_race
-  #   district = str.find_by_name("ACADEMY 20")
-
-  #   assert_raises UnknownRaceError, district.proficient_by_race_or_ethnicity(:brown)
-  # end
+  def test_get_scores_for_unknown_race
+    skip
+    district = str.find_by_name("ACADEMY 20")
+    assert_raises (UnknownRaceError) do
+      district.proficient_by_race_or_ethnicity(:brown)
+    end
+  end
 end
