@@ -21,7 +21,7 @@ class StatewideTest
     elsif grade == 8
       return eighth_grade_data
     else
-      raise Exception.new("UnknownDataError")
+      raise UnknownDataError.new
     end
   end
 
@@ -29,9 +29,8 @@ class StatewideTest
     combo = {}
     combo[race] = self.math_data[race]
 
-    if combo[race].nil?
-      raise Exception.new("UnknownRaceError")
-    end
+    raise UnknownRaceError.new if combo[race].nil?
+
     combo[race].each do |k,v|
       v = v.to_a
       v << self.reading_data[race][k].to_a.flatten
@@ -47,14 +46,65 @@ class StatewideTest
   end
 
   def proficient_for_subject_by_grade_in_year(subject, grade, year)
-    if grade != 3 and grade != 8
-      raise Exception.new("UnknownDataError")
-    elsif subject != :math and subject != :reading and subject != :writing
-      raise Exception.new("UnknownDataError")
-    elsif !self.third_grade_data.has_key?(year)
-      raise Exception.new("UnknownDataError")
+    check_for_data_and_grade_errors(subject, grade, year)
+
+    answer = 0
+    if grade == 3
+      answer = self.third_grade_data[year][subject]
+    else
+      answer = self.eighth_grade_data[year][subject]
     end
 
-
+    answer = "N/A" if answer == 0
+    return answer
   end
+
+  def proficient_for_subject_by_race_in_year(subject, race, year)
+    check_for_data_and_race_errors(subject, race, year)
+
+    if subject == :math
+      return truncate(self.math_data[race][year][subject])
+    elsif subject == :reading
+      return truncate(self.reading_data[race][year][subject])
+    elsif subject == :writing
+      return truncate(self.writing_data[race][year][subject])
+    end
+  end
+
+  private
+
+  def check_for_data_and_grade_errors(subject, grade, year)
+    if grade != 3 and grade != 8
+      raise UnknownDataError.new
+    elsif subject != :math and subject != :reading and subject != :writing
+      raise UnknownDataError.new
+    elsif !self.third_grade_data.has_key?(year)
+      raise UnknownDataError.new
+    end
+  end
+
+  def check_for_data_and_race_errors(subject, race, year)
+    races = [
+      :"all students", :asian, :black, :"hawaiian/pacific islander",
+      :hispanic, :"native american", :"two or more", :white
+    ]
+    subjects = [:math, :reading, :writing]
+    
+    if !races.include?(race)
+      raise UnknownDataError.new
+    elsif !subjects.include?(subject)
+      raise UnknownDataError.new
+    elsif !self.math_data[race].include?(year)
+      raise UnknownDataError.new
+    end
+  end
+  
+end
+
+class UnknownDataError < Exception
+
+end
+
+class UnknownRaceError < Exception
+  
 end

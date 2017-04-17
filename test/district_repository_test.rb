@@ -46,7 +46,6 @@ class DistrictRepositoryTest < Minitest::Test
   end
 
   def test_district_relationship_to_statewide_tests
-    skip
     repo = DistrictRepository.new
     repo.load_data({
       :enrollment => {
@@ -62,13 +61,8 @@ class DistrictRepositoryTest < Minitest::Test
       }
     })
 
-    district = dr.find_by_name("ACADEMY 20")
-    statewide_test = district.statewide_test
+    district = repo.find_by_name("ACADEMY 20")
+    assert_instance_of StatewideTest, district.statewide_test
   end
-
-  # def test_load_data
-  #   dr = DistrictRepository.new
-  #   assert dr.load_data({:enrollment => {:kindergarten => file_name}})
-  # end
 
 end
