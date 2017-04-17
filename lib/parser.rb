@@ -1,5 +1,4 @@
 require 'csv'
-# require_relative 'statewide_test'
 
 module Parser
 
@@ -214,6 +213,112 @@ module Parser
         row[:data].to_f
       end
 
+    end
+  end
+
+  class EconomicParser
+
+    class << self
+
+      def get_data(file)
+        contents = CSV.open(
+          file, headers: true, header_converters: :symbol)
+
+        case file
+        when "./data/Median household income.csv"
+          @economic_profiles = create_economic_profiles_from(contents)
+          contents.rewind
+          return add_income_data(contents, @economic_profiles)
+        when "./data/School-aged children in poverty.csv"
+          return add_poverty_data(contents, @economic_profiles)
+        when "./data/Students qualifying for free or reduced price lunch.csv"
+          return add_lunch_data(contents, @economic_profiles)
+        when "./data/Title I students.csv"
+          return add_title_i_data(contents, @economic_profiles)
+        end
+      end
+
+      def create_economic_profiles_from(contents)
+        economic_enrollments = contents.collect do |row|
+          row[:name] = row[:location]
+          EconomicProfile.new(row)
+        end
+        economic_enrollments.uniq! {|economic_profile| economic_profile.name}
+      end
+
+      def add_income_data(contents, economic_profiles)
+        contents.each do |row|
+          index = economic_profiles.find_index { |economic_profile|
+            economic_profile.name == row[:location]
+          }
+
+          economic_profiles[index].income_data[years(row)] =
+            row[:data].to_i
+        end
+        economic_profiles
+      end
+
+      def add_poverty_data(contents, economic_profiles)
+        contents.each do |row|
+          index = economic_profiles.find_index { |economic_profile|
+            economic_profile.name == row[:location]
+          }
+          if row[:dataformat] == "Percent"
+            economic_profiles[index].poverty_data[row[:timeframe].to_i] =
+              row[:data].to_f
+          end
+        end
+        economic_profiles
+      end
+
+      def add_lunch_data(contents, economic_profiles)
+        contents.each do |row|
+          index = economic_profiles.find_index { |economic_profile|
+            economic_profile.name == row[:location]
+          }
+
+          if row[:poverty_level] == "Eligible for Free or Reduced Lunch"
+
+            if row[:dataformat] == "Percent"
+
+              if economic_profiles[index].lunch_data.has_key?(row[:timeframe].to_i)
+                economic_profiles[index].lunch_data[row[:timeframe].to_i][:percentage] =
+                  row[:data].to_f
+              else
+                economic_profiles[index].lunch_data[row[:timeframe].to_i] =
+                  {:percentage => row[:data].to_f}
+              end
+
+            elsif row[:dataformat] == "Number"
+
+              if economic_profiles[index].lunch_data.has_key?(row[:timeframe].to_i)
+                economic_profiles[index].lunch_data[row[:timeframe].to_i][:total] =
+                  row[:data].to_f
+              else
+                economic_profiles[index].lunch_data[row[:timeframe].to_i] =
+                  {:total => row[:data].to_f}
+              end
+
+            end
+          end
+        end
+        economic_profiles
+      end
+
+      def add_title_i_data(contents, economic_profiles)
+        contents.each do |row|
+          index = economic_profiles.find_index { |economic_profile|
+            economic_profile.name == row[:location]
+          }
+          economic_profiles[index].title_i_data[row[:timeframe].to_i] =
+            row[:data].to_f
+        end
+        economic_profiles
+      end
+
+      def years(row)
+        row[:timeframe].split("-").map {|year| year.to_i}
+      end
     end
   end
 end
