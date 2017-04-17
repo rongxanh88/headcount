@@ -1,7 +1,9 @@
 require './test/test_helper'
+# require './lib/error_module'
 require './lib/statewide_test_repository'
 
 class StatewideTestRepositoryTest < Minitest::Test
+  # include Errors
   attr_reader :str
   def setup
     third_grade_file = "./data/3rd grade students scoring proficient or above on the CSAP_TCAP.csv"
@@ -41,9 +43,7 @@ class StatewideTestRepositoryTest < Minitest::Test
   end
   
   def test_find_by_name
-    skip
     district = str.find_by_name("ACADEMY 20")
-
     assert_instance_of StatewideTest, district
   end
 
@@ -60,7 +60,9 @@ class StatewideTestRepositoryTest < Minitest::Test
     }
     assert_equal expected, district.proficient_by_grade(3)
     assert_instance_of Hash, district.proficient_by_grade(8)
-    # assert_equal 0, district.proficient_by_grade(10)
+    assert_raises (UnknownDataError) do
+      district.proficient_by_grade(10)
+    end
   end
 
   def test_get_scores_by_race
@@ -92,10 +94,7 @@ class StatewideTestRepositoryTest < Minitest::Test
     assert_equal 0.818, result
   end
 
-
-#Old Tests
   def test_proficiency_with_invalid_parameter
-    skip
     subject, race, year = :science, :brown, 2018
     district = str.find_by_name("ACADEMY 20")
     assert_raises UnknownDataError do
@@ -105,7 +104,6 @@ class StatewideTestRepositoryTest < Minitest::Test
   end
 
   def test_get_scores_for_unknown_race
-    skip
     district = str.find_by_name("ACADEMY 20")
     assert_raises (UnknownRaceError) do
       district.proficient_by_race_or_ethnicity(:brown)
