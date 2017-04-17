@@ -55,6 +55,28 @@ class StatewideTest
       raise Exception.new("UnknownDataError")
     end
 
+    if grade == 3
+      return self.third_grade_data[year][subject]
+    else
+      return self.eighth_grade_data[year][subject]
+    end
+  end
 
+  def proficient_for_subject_by_race_in_year(subject, race, year)
+    # if race != 3 and grade != 8
+    #   raise Exception.new("UnknownDataError")
+    # elsif subject != :math and subject != :reading and subject != :writing
+    #   raise Exception.new("UnknownDataError")
+    # elsif !self.third_grade_data.has_key?(year)
+    #   raise Exception.new("UnknownDataError")
+    # end
+
+    if subject == :math
+      return truncate(self.math_data[race][year][subject])
+    elsif subject == :reading
+      return truncate(self.reading_data[race][year][subject])
+    elsif subject == :writing
+      return truncate(self.writing_data[race][year][subject])
+    end
   end
 end
