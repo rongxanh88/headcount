@@ -88,6 +88,7 @@ class HeadcountAnalyst
 
       end
       answer = all_districts_year_over_year.sort_by {|k, v| v}.reverse.to_a
+      binding.pry
       answer.shift(2)
       return answer.first
     elsif grade[:grade] == 8
