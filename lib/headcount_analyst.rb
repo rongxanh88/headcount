@@ -39,11 +39,11 @@ class HeadcountAnalyst
   end
 
   def kindergarten_participation_against_high_school_graduation(district)
-    district_kindergarten_variation = 
+    district_kindergarten_variation =
       kindergarten_participation_rate_variation(
         district, :against => STATE)
 
-    district_graduation_variation = 
+    district_graduation_variation =
       graduation_rate_variation(district, :against => STATE)
 
     truncate(district_kindergarten_variation / district_graduation_variation)
@@ -65,6 +65,58 @@ class HeadcountAnalyst
       result = true if correlation < 1.5 and correlation > 0.6
     end
     result
+  end
+
+  def top_statewide_test_year_over_year_growth(grade)
+    if grade[:grade] == 3
+      all_districts_year_over_year = {}
+
+      district_repo.statewide_tests.statewide_tests.each do |statewide_test|
+        scores = Array.new
+
+        statewide_test.third_grade_data.each do |year, subjects|
+          score = average(
+            (statewide_test.third_grade_data[year][:math]) +
+            (statewide_test.third_grade_data[year][:reading]) +
+            (statewide_test.third_grade_data[year][:writing]), 3)
+          scores << score
+        end
+
+        biggest_num = (scores.last - scores.first) / (scores.count - 1)
+
+        all_districts_year_over_year[statewide_test.name] = biggest_num
+
+      end
+      answer = all_districts_year_over_year.sort_by {|k, v| v}.reverse.to_a
+      binding.pry
+      answer.shift(2)
+      return answer.first
+    elsif grade[:grade] == 8
+      all_districts_year_over_year = {}
+
+      district_repo.statewide_tests.statewide_tests.each do |statewide_test|
+        scores = Array.new
+
+        statewide_test.eighth_grade_data.each do |year, subjects|
+          score = average(
+            (statewide_test.eighth_grade_data[year][:math]) +
+            (statewide_test.eighth_grade_data[year][:reading]) +
+            (statewide_test.eighth_grade_data[year][:writing]), 3)
+          scores << score
+        end
+
+        biggest_num = (scores.last - scores.first) / (scores.count - 1)
+
+        all_districts_year_over_year[statewide_test.name] = biggest_num
+
+      end
+      answer = all_districts_year_over_year.sort_by {|k, v| v}.reverse.to_a
+      # answer.shift(2)
+      binding.pry
+      return answer.first
+    else
+      raise UnknownDataError.new
+    end
   end
 
   private
@@ -141,7 +193,12 @@ class HeadcountAnalyst
   def is_correlation?(correlation_results)
     number_true = correlation_results.count {|x| x == true}
     result = number_true.to_f / correlation_results.count
-    
+
     result > 0.7 ? true : false
   end
+
+end
+
+class UnknownDataError < Exception
+
 end
