@@ -42,4 +42,9 @@ class EconomicProfileRepositoryTest < Minitest::Test
       district.median_household_income_in_year(1900)
     end
   end
+
+  def test_median_household_income_average
+    district = repo.find_by_name("ACADEMY 20")
+    assert_equal 87635, district.median_household_income_average
+  end
 end

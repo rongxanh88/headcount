@@ -8,10 +8,10 @@ class EconomicProfile
 
   def initialize(input)
     @name = input[:name]
-    @income_data = input[:third_grade] || Hash.new
-    @poverty_data = input[:eighth_grade] || Hash.new
-    @lunch_data = input[:math] || Hash.new
-    @title_i_data = input[:reading] || Hash.new
+    @income_data = input[:median_household_income] || Hash.new
+    @poverty_data = input[:children_in_poverty] || Hash.new
+    @lunch_data = input[:free_or_reduced_price_lunch] || Hash.new
+    @title_i_data = input[:title_i] || Hash.new
   end
 
   def median_household_income_in_year(year)
@@ -31,7 +31,11 @@ class EconomicProfile
     
     raise UnknownDataError if number_of_incomes == 0
 
-    average_income = (incomes_from_year.reduce(:+)) / number_of_incomes
+    average(incomes_from_year.reduce(:+), number_of_incomes)
+  end
+
+  def median_household_income_average
+    average(income_data.values.reduce(:+), income_data.values.count)
   end
 end
 

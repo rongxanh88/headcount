@@ -8,9 +8,9 @@ module Operations
     rate.to_d.truncate(3).to_f
   end
 
-  def average(rate, size)
-    return 0 if size == 0
-    rate / size
+  def average(numerator, denominator)
+    return 0 if denominator == 0
+    numerator / denominator
   end
 
   def calculate_comparison_for_values(values1, values2)
