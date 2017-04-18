@@ -7,6 +7,7 @@ class District
     @name = input[:name]
     @enrollment = nil
     @statewide_test = nil
+    @economic_profile = nil
   end
 
 end

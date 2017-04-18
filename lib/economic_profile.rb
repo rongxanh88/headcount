@@ -29,13 +29,33 @@ class EconomicProfile
     incomes_from_year.compact!
     number_of_incomes = incomes_from_year.count
     
-    raise UnknownDataError if number_of_incomes == 0
+    raise UnknownDataError.new if number_of_incomes == 0
 
     average(incomes_from_year.reduce(:+), number_of_incomes)
   end
 
   def median_household_income_average
     average(income_data.values.reduce(:+), income_data.values.count)
+  end
+
+  def children_in_poverty_in_year(year)
+    raise UnknownDataError.new if poverty_data[year].nil?
+    poverty_data[year]
+  end
+
+  def free_or_reduced_price_lunch_percentage_in_year(year)
+    raise UnknownDataError.new if lunch_data[year][:percentage].nil?
+    truncate(lunch_data[year][:percentage])
+  end
+
+  def free_or_reduced_price_lunch_number_in_year(year)
+    raise UnknownDataError.new if lunch_data[year][:total].nil?
+    lunch_data[year][:total].to_i
+  end
+
+  def title_i_in_year(year)
+    raise UnknownDataError.new if title_i_data[year].nil?
+    truncate(title_i_data[year])
   end
 end
 
