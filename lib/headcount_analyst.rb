@@ -67,14 +67,35 @@ class HeadcountAnalyst
     result
   end
 
-  def top_statewide_test_year_over_year_growth(grade)
-    if grade[:grade] == 3
+  def top_statewide_test_year_over_year_growth(**args)
+    grade = args[:grade]
+    subject = args[:subject]
+
+    raise InsufficientInformationError.new if grade.nil?
+
+    # if subject.nil?
+    #   calculate_all_subjects(args)
+    # else
+    #   calculate_subject(args)
+    # end
+
+    subject.nil? ? calculate_all_subjects(args) : calculate_subject(args)
+
+  end
+
+  def calculate_all_subjects(args)
+    binding.pry
+    grade = args[:grade]
+    weight = args[:weight] || {:math => 1.0/3, :reading => 1.0/3, :writing => 1.0/3}
+
+    if grade == 3
       all_districts_year_over_year = {}
 
       district_repo.statewide_tests.statewide_tests.each do |statewide_test|
         scores = Array.new
 
         statewide_test.third_grade_data.each do |year, subjects|
+
           score = average(
             (statewide_test.third_grade_data[year][:math]) +
             (statewide_test.third_grade_data[year][:reading]) +
@@ -82,16 +103,17 @@ class HeadcountAnalyst
           scores << score
         end
 
-        biggest_num = (scores.last - scores.first) / (scores.count - 1)
+        biggest_num = average((scores.last - scores.first), (scores.count - 1))
 
         all_districts_year_over_year[statewide_test.name] = biggest_num
 
       end
       answer = all_districts_year_over_year.sort_by {|k, v| v}.reverse.to_a
-      binding.pry
       answer.shift(2)
+      answer[0][1] = truncate(answer[0][1])
       return answer.first
-    elsif grade[:grade] == 8
+
+    elsif grade == 8
       all_districts_year_over_year = {}
 
       district_repo.statewide_tests.statewide_tests.each do |statewide_test|
@@ -113,10 +135,42 @@ class HeadcountAnalyst
       answer = all_districts_year_over_year.sort_by {|k, v| v}.reverse.to_a
       # answer.shift(2)
       binding.pry
+      answer[0][1] = truncate(answer[0][1])
+      return answer.first
+    end
+
+  end
+
+  def calculate_subject(args)
+    grade = args[:grade]
+    subject = args[:subject]
+
+    if grade == 3
+      all_districts = {}
+
+      district_repo.statewide_tests.statewide_tests.each do |statewide_test|
+        scores = Array.new
+
+        statewide_test.third_grade_data.each do |year, value|
+          score = statewide_test.third_grade_data[year][subject]
+          scores << score
+          
+        end
+
+        biggest_num = average((scores.last - scores.first), (scores.count - 1))
+
+        all_districts[statewide_test.name] = biggest_num
+
+      end
+      answer = all_districts.sort_by {|k, v| v}.reverse.to_a
+      binding.pry
+      # answer.shift(2)
+      answer[0][1] = truncate(answer[0][1])
       return answer.first
     else
-      raise UnknownDataError.new
     end
+
+    binding.pry
   end
 
   private
@@ -197,8 +251,20 @@ class HeadcountAnalyst
     result > 0.7 ? true : false
   end
 
+  def third_grade_data
+    statewide_test.third_grade_data
+  end
+
+  def eighth_grade_data
+    statewide_test.eighth_grade_data
+  end
+
 end
 
 class UnknownDataError < Exception
+
+end
+
+class InsufficientInformationError < Exception
 
 end
