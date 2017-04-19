@@ -133,9 +133,15 @@ class HeadcountAnalystTest < Minitest::Test
     # assert_equal district_5, result.first
     # assert_equal 0.148, result.last
 
-    # assert_raises UnknownDataError do
-    #  ha.top_statewide_test_year_over_year_growth(grade: 8, subject: :math)
-  #  end
+    # district_6 = "OURAY R-1"
+    # result = ha.top_statewide_test_year_over_year_growth(
+    #   grade: 8, :weighting => {:math => 0.5, :reading => 0.5, :writing => 0.0})
+    # assert_equal district_6, result.first
+    # assert_equal 0.153, result.last
+
+    # assert_raises InsufficientInformationError do
+    #   ha.top_statewide_test_year_over_year_growth(subject: :math)
+    # end
   end
 
   # def test_pull_enrollment_by_name

@@ -73,68 +73,72 @@ class HeadcountAnalyst
 
     raise InsufficientInformationError.new if grade.nil?
 
-    # if subject.nil?
-    #   calculate_all_subjects(args)
-    # else
-    #   calculate_subject(args)
-    # end
-
     subject.nil? ? calculate_all_subjects(args) : calculate_subject(args)
-
   end
 
   def calculate_all_subjects(args)
-    binding.pry
     grade = args[:grade]
-    weight = args[:weight] || {:math => 1.0/3, :reading => 1.0/3, :writing => 1.0/3}
+    weight = args[:weighting] || {:math => 1.0/3, :reading => 1.0/3, :writing => 1.0/3}
 
     if grade == 3
-      all_districts_year_over_year = {}
+      all_districts = {}
 
       district_repo.statewide_tests.statewide_tests.each do |statewide_test|
         scores = Array.new
-
+        binding.pry if statewide_test.name == "SANGRE DE CRISTO RE-22J"
         statewide_test.third_grade_data.each do |year, subjects|
-
-          score = average(
-            (statewide_test.third_grade_data[year][:math]) +
-            (statewide_test.third_grade_data[year][:reading]) +
-            (statewide_test.third_grade_data[year][:writing]), 3)
-          scores << score
+          
+          score = (
+            (statewide_test.third_grade_data[year][:math] * weight[:math]) +
+            (statewide_test.third_grade_data[year][:reading] * weight[:reading]) +
+            (statewide_test.third_grade_data[year][:writing] * weight[:writing])
+            )
+            
+          scores << score if score != 0
         end
 
-        biggest_num = average((scores.last - scores.first), (scores.count - 1))
+        if scores.count > 1
+          biggest_num = average((scores.last - scores.first), (scores.count - 1))
+        else
+          biggest_num = 0
+        end
 
-        all_districts_year_over_year[statewide_test.name] = biggest_num
+        all_districts[statewide_test.name] = biggest_num
 
       end
-      answer = all_districts_year_over_year.sort_by {|k, v| v}.reverse.to_a
+      answer = all_districts.sort_by {|k, v| v}.reverse.to_a
+      binding.pry
       answer.shift(2)
       answer[0][1] = truncate(answer[0][1])
       return answer.first
 
     elsif grade == 8
-      all_districts_year_over_year = {}
+      all_districts = {}
 
       district_repo.statewide_tests.statewide_tests.each do |statewide_test|
         scores = Array.new
 
         statewide_test.eighth_grade_data.each do |year, subjects|
-          score = average(
-            (statewide_test.eighth_grade_data[year][:math]) +
-            (statewide_test.eighth_grade_data[year][:reading]) +
-            (statewide_test.eighth_grade_data[year][:writing]), 3)
-          scores << score
+          # binding.pry
+          score = (
+            (statewide_test.third_grade_data[year][:math] * weight[:math]) +
+            (statewide_test.third_grade_data[year][:reading] * weight[:reading]) +
+            (statewide_test.third_grade_data[year][:writing] * weight[:writing])
+            )
+
+          scores << score if score != 0
         end
 
-        biggest_num = (scores.last - scores.first) / (scores.count - 1)
+        if scores.count > 1
+          biggest_num = average((scores.last - scores.first), (scores.count - 1))
+        else
+          biggest_num = 0
+        end
 
-        all_districts_year_over_year[statewide_test.name] = biggest_num
+        all_districts[statewide_test.name] = biggest_num
 
       end
-      answer = all_districts_year_over_year.sort_by {|k, v| v}.reverse.to_a
-      # answer.shift(2)
-      binding.pry
+      answer = all_districts.sort_by {|k, v| v}.reverse.to_a
       answer[0][1] = truncate(answer[0][1])
       return answer.first
     end
@@ -153,24 +157,47 @@ class HeadcountAnalyst
 
         statewide_test.third_grade_data.each do |year, value|
           score = statewide_test.third_grade_data[year][subject]
-          scores << score
+          scores << score if score != 0
           
         end
-
-        biggest_num = average((scores.last - scores.first), (scores.count - 1))
-
+        if scores.count > 1
+          biggest_num = average((scores.last - scores.first), (scores.count - 1))
+        else
+          biggest_num = 0
+        end
         all_districts[statewide_test.name] = biggest_num
 
       end
       answer = all_districts.sort_by {|k, v| v}.reverse.to_a
-      binding.pry
-      # answer.shift(2)
       answer[0][1] = truncate(answer[0][1])
+
       return answer.first
-    else
+
+    elsif grade == 8
+      all_districts = {}
+
+      district_repo.statewide_tests.statewide_tests.each do |statewide_test|
+        scores = Array.new
+
+        statewide_test.eighth_grade_data.each do |year, value|
+          score = statewide_test.eighth_grade_data[year][subject]
+          scores << score if score != 0
+        end
+
+        if scores.count > 1
+          biggest_num = average((scores.last - scores.first), (scores.count - 1))
+        else
+          biggest_num = 0
+        end
+
+        all_districts[statewide_test.name] = biggest_num
+      end
+      answer = all_districts.sort_by {|k, v| v}.reverse.to_a
+      answer[0][1] = truncate(answer[0][1])
+
+      return answer.first
     end
 
-    binding.pry
   end
 
   private
@@ -249,14 +276,6 @@ class HeadcountAnalyst
     result = number_true.to_f / correlation_results.count
 
     result > 0.7 ? true : false
-  end
-
-  def third_grade_data
-    statewide_test.third_grade_data
-  end
-
-  def eighth_grade_data
-    statewide_test.eighth_grade_data
   end
 
 end
