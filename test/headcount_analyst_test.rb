@@ -39,14 +39,12 @@ class HeadcountAnalystTest < Minitest::Test
   end
 
   def test_it_initializes_with_district_repository
-    skip
-    ha = HeadcountAnalyst.new(dr)
-    assert_equal dr, ha.district_repo
+    ha = HeadcountAnalyst.new(full_repo)
+    assert_equal full_repo, ha.district_repo
   end
 
   def test_rate_variation
-    skip
-    ha = HeadcountAnalyst.new(dr)
+    ha = HeadcountAnalyst.new(full_repo)
     district1 = "ACADEMY 20"
     district2 = "Colorado"
     result = ha.kindergarten_participation_rate_variation(
@@ -55,8 +53,7 @@ class HeadcountAnalystTest < Minitest::Test
   end
 
   def test_rate_variation_trend
-    skip
-    ha = HeadcountAnalyst.new(dr)
+    ha = HeadcountAnalyst.new(full_repo)
     district1 = "ACADEMY 20"
     district2 = "Colorado"
     expected = {
@@ -70,16 +67,14 @@ class HeadcountAnalystTest < Minitest::Test
   end
 
   def test_high_school_graduation_correlates_kindergarten_participation
-    skip
-    ha = HeadcountAnalyst.new(repo)
+    ha = HeadcountAnalyst.new(full_repo)
     name = "ACADEMY 20"
     result = ha.kindergarten_participation_against_high_school_graduation(name)
     assert_equal 0.641, result
   end
 
   def test_kindergarten_participation_correlates_with_high_school_graduation
-    skip
-    ha = HeadcountAnalyst.new(repo)
+    ha = HeadcountAnalyst.new(full_repo)
     district = "ACADEMY 20"
     state = "STATEWIDE"
 
@@ -90,8 +85,7 @@ class HeadcountAnalystTest < Minitest::Test
   end
 
   def test_kindergarten_participation_correlates_with_high_school_graduation_multiple_districts
-    skip
-    ha = HeadcountAnalyst.new(repo)
+    ha = HeadcountAnalyst.new(full_repo)
     district_1 = "ACADEMY 20"
     district_2 = "AGATE 300"
     district_3 = "AKRON R-1"
@@ -101,54 +95,62 @@ class HeadcountAnalystTest < Minitest::Test
       :across => [district_1, district_2, district_3, district_4])
   end
 
-  def test_statewide_year_over_year_growth
+  def test_statewide_year_over_year_growth_grade_3
     ha = HeadcountAnalyst.new(full_repo)
-    # district = "SANGRE DE CRISTO RE-22J"
-    # result = ha.top_statewide_test_year_over_year_growth(grade: 3)
+    district = "SANGRE DE CRISTO RE-22J"
+    result = ha.top_statewide_test_year_over_year_growth(grade: 3)
 
-    # assert_equal district, result.first
-    # assert_equal 0.071, result.last
+    assert_equal district, result.first
+    assert_equal 0.071, result.last
+  end
 
-    # district_2 = "OURAY R-1"
-    # result = ha.top_statewide_test_year_over_year_growth(grade: 8)
+  def test_statewide_year_over_year_growth_grade_8
+    ha = HeadcountAnalyst.new(full_repo)
 
-    # assert_equal district_2, result.first
-    # assert_equal 0.11, result.last
+    district_2 = "OURAY R-1"
+    result = ha.top_statewide_test_year_over_year_growth(grade: 8)
 
+    assert_equal district_2, result.first
+    assert_equal 0.11, result.last
+  end
+
+  def test_single_subject_year_over_year
+    ha = HeadcountAnalyst.new(full_repo)
     district_3 = "WILEY RE-13 JT"
     result = ha.top_statewide_test_year_over_year_growth(grade: 3, subject: :math)
 
     assert_equal district_3, result.first
     assert_equal 0.3, result.last
 
-    # district_4 = "COTOPAXI RE-3"
-    # result = ha.top_statewide_test_year_over_year_growth(grade: 8, subject: :reading)
+    district_4 = "COTOPAXI RE-3"
+    result = ha.top_statewide_test_year_over_year_growth(grade: 8, subject: :reading)
 
-    # assert_equal district_4, result.first
-    # assert_equal 0.13, result.last
+    assert_equal district_4, result.first
+    assert_equal 0.131, result.last
 
-    # district_5 = "BETHUNE R-5"
-    # result = ha.top_statewide_test_year_over_year_growth(grade: 3, subject: :writing)
+    district_5 = "BETHUNE R-5"
+    result = ha.top_statewide_test_year_over_year_growth(grade: 3, subject: :writing)
 
-    # assert_equal district_5, result.first
-    # assert_equal 0.148, result.last
-
-    # district_6 = "OURAY R-1"
-    # result = ha.top_statewide_test_year_over_year_growth(
-    #   grade: 8, :weighting => {:math => 0.5, :reading => 0.5, :writing => 0.0})
-    # assert_equal district_6, result.first
-    # assert_equal 0.153, result.last
-
-    # assert_raises InsufficientInformationError do
-    #   ha.top_statewide_test_year_over_year_growth(subject: :math)
-    # end
+    assert_equal district_5, result.first
+    assert_equal 0.148, result.last
   end
 
-  # def test_pull_enrollment_by_name
-  #   ha = HeadcountAnalyst.new(dr)
-  #   name = 'ACADEMY 20'
-  #   result = ha.get_enrollment(name)
-  #   assert_instance_of Enrollment, result
-  #   assert_equal name, result.name
-  # end
+  def test_raises_insufficient_info
+    ha = HeadcountAnalyst.new(full_repo)
+
+    assert_raises InsufficientInformationError do
+      ha.top_statewide_test_year_over_year_growth(subject: :math)
+    end
+  end
+
+  def test_year_over_year_growth_with_weighting
+    ha = HeadcountAnalyst.new(full_repo)
+    district = "OURAY R-1"
+    result = ha.top_statewide_test_year_over_year_growth(
+      grade: 8, :weighting => {:math => 0.5, :reading => 0.5, :writing => 0.0})
+      
+    assert_equal district, result.first
+    assert_equal 0.153, result.last
+  end
+
 end
