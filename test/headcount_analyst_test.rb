@@ -103,10 +103,35 @@ class HeadcountAnalystTest < Minitest::Test
 
   def test_statewide_year_over_year_growth
     ha = HeadcountAnalyst.new(full_repo)
+    # district = "SANGRE DE CRISTO RE-22J"
+    # result = ha.top_statewide_test_year_over_year_growth(grade: 3)
 
-    # assert_equal 0, ha.top_statewide_test_year_over_year_growth(grade: 3)
+    # assert_equal district, result.first
+    # assert_equal 0.071, result.last
 
-    assert_equal 0, ha.top_statewide_test_year_over_year_growth(grade: 8, subject: :math)
+    # district_2 = "OURAY R-1"
+    # result = ha.top_statewide_test_year_over_year_growth(grade: 8)
+
+    # assert_equal district_2, result.first
+    # assert_equal 0.11, result.last
+
+    district_3 = "WILEY RE-13 JT"
+    result = ha.top_statewide_test_year_over_year_growth(grade: 3, subject: :math)
+
+    assert_equal district_3, result.first
+    assert_equal 0.3, result.last
+
+    # district_4 = "COTOPAXI RE-3"
+    # result = ha.top_statewide_test_year_over_year_growth(grade: 8, subject: :reading)
+
+    # assert_equal district_4, result.first
+    # assert_equal 0.13, result.last
+
+    # district_5 = "BETHUNE R-5"
+    # result = ha.top_statewide_test_year_over_year_growth(grade: 3, subject: :writing)
+
+    # assert_equal district_5, result.first
+    # assert_equal 0.148, result.last
 
     # assert_raises UnknownDataError do
     #  ha.top_statewide_test_year_over_year_growth(grade: 8, subject: :math)
