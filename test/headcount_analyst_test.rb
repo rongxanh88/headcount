@@ -14,14 +14,6 @@ class HeadcountAnalystTest < Minitest::Test
     file6 = "./data/Average proficiency on the CSAP_TCAP by race_ethnicity_ Reading.csv"
     file7 = "./data/Average proficiency on the CSAP_TCAP by race_ethnicity_ Writing.csv"
 
-    # @dr = DistrictRepository.new
-    # dr.load_data({:enrollment => {:kindergarten => file1}})
-    #
-    # @repo = DistrictRepository.new
-    # repo.load_data({:enrollment => {
-    #   :kindergarten => file1, :high_school_graduation => file2}
-    # })
-
     @full_repo = DistrictRepository.new
     full_repo.load_data({
       :enrollment => {

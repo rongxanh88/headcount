@@ -1,5 +1,4 @@
 require_relative 'operations_module'
-require 'pry'
 
 class StatewideTest
   include Operations
@@ -46,6 +45,7 @@ class StatewideTest
   end
 
   def proficient_for_subject_by_grade_in_year(subject, grade, year)
+    
     check_for_data_and_grade_errors(subject, grade, year)
 
     answer = 0
@@ -60,6 +60,7 @@ class StatewideTest
   end
 
   def proficient_for_subject_by_race_in_year(subject, race, year)
+    
     check_for_data_and_race_errors(subject, race, year)
 
     if subject == :math
