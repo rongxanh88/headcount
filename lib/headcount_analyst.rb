@@ -39,11 +39,11 @@ class HeadcountAnalyst
   end
 
   def kindergarten_participation_against_high_school_graduation(district)
-    district_kindergarten_variation = 
+    district_kindergarten_variation =
       kindergarten_participation_rate_variation(
         district, :against => STATE)
 
-    district_graduation_variation = 
+    district_graduation_variation =
       graduation_rate_variation(district, :against => STATE)
 
     truncate(district_kindergarten_variation / district_graduation_variation)
@@ -59,12 +59,166 @@ class HeadcountAnalyst
     name = district[:for]
     result = false
     if name == "STATEWIDE"
-      result = correlation_across_districts(district_repo.enrollments)
+      result = correlation_across_districts(district_repo.enrollments.enrollments)
     else
       correlation = kindergarten_participation_against_high_school_graduation(name)
       result = true if correlation < 1.5 and correlation > 0.6
     end
     result
+  end
+
+  def top_statewide_test_year_over_year_growth(**args)
+    grade = args[:grade]
+    subject = args[:subject]
+
+    raise InsufficientInformationError.new if grade.nil?
+
+    subject.nil? ? calculate_all_subjects(args) : calculate_subject(args)
+  end
+
+  def calculate_all_subjects(args)
+    grade = args[:grade]
+    weight = args[:weighting] || {:math => 1.0/3, :reading => 1.0/3, :writing => 1.0/3}
+
+    if grade == 3
+      all_districts = {}
+
+      district_repo.statewide_tests.statewide_tests.each do |statewide_test|
+        scores = Hash.new
+
+        statewide_test.third_grade_data.each do |year, subjects|
+          
+          score = (
+            (statewide_test.third_grade_data[year][:math] * weight[:math]) +
+            (statewide_test.third_grade_data[year][:reading] * weight[:reading]) +
+            (statewide_test.third_grade_data[year][:writing] * weight[:writing])
+            )
+            
+          scores[year] = score if score != 0
+        end
+
+        if scores.count > 1
+          scores = scores.to_a
+          biggest_num = average(
+            (scores.last.last - scores.first.last),
+            (scores.last.first - scores.first.first)
+            )
+        else
+          biggest_num = 0
+        end
+
+        all_districts[statewide_test.name] = biggest_num
+
+      end
+      answer = all_districts.sort_by {|k, v| v}.reverse.to_a
+      answer.shift(3) #top three results are outliers
+      answer[0][1] = truncate(answer[0][1])
+      return answer.first
+
+    elsif grade == 8
+      all_districts = {}
+
+      district_repo.statewide_tests.statewide_tests.each do |statewide_test|
+        scores = Hash.new
+
+        statewide_test.eighth_grade_data.each do |year, subjects|
+
+          score = (
+            (statewide_test.eighth_grade_data[year][:math] * weight[:math]) +
+            (statewide_test.eighth_grade_data[year][:reading] * weight[:reading]) +
+            (statewide_test.eighth_grade_data[year][:writing] * weight[:writing])
+            )
+
+          scores[year] = score if score != 0
+        end
+
+        if scores.count > 1
+          scores = scores.to_a
+          biggest_num = average(
+            (scores.last.last - scores.first.last),
+            (scores.last.first - scores.first.first)
+            )
+        else
+          biggest_num = 0
+        end
+
+        all_districts[statewide_test.name] = biggest_num
+
+      end
+      answer = all_districts.sort_by {|k, v| v}.reverse.to_a
+
+      while answer[0][1] > 0.16 do
+        answer.shift
+      end
+
+      answer[0][1] = truncate(answer[0][1])
+      return answer.first
+    end
+
+  end
+
+  def calculate_subject(args)
+    grade = args[:grade]
+    subject = args[:subject]
+
+    if grade == 3
+      all_districts = {}
+
+      district_repo.statewide_tests.statewide_tests.each do |statewide_test|
+        scores = Hash.new
+
+        statewide_test.third_grade_data.each do |year, value|
+          score = statewide_test.third_grade_data[year][subject]
+          scores[year] = score if score != 0
+          
+        end
+        if scores.count > 1
+          scores = scores.to_a
+          biggest_num = average(
+            (scores.last.last - scores.first.last),
+            (scores.last.first - scores.first.first)
+            )
+        else
+          biggest_num = 0
+        end
+        all_districts[statewide_test.name] = biggest_num
+
+      end
+
+      answer = all_districts.sort_by {|k, v| v}.reverse.to_a
+      answer[0][1] = truncate(answer[0][1])
+
+      return answer.first
+
+    elsif grade == 8
+      all_districts = {}
+
+      district_repo.statewide_tests.statewide_tests.each do |statewide_test|
+        scores = Hash.new
+
+        statewide_test.eighth_grade_data.each do |year, value|
+          score = statewide_test.eighth_grade_data[year][subject]
+          scores[year] = score if score != 0
+        end
+
+        if scores.count > 1
+          scores = scores.to_a
+          biggest_num = average(
+            (scores.last.last - scores.first.last),
+            (scores.last.first - scores.first.first)
+            )
+        else
+          biggest_num = 0
+        end
+
+        all_districts[statewide_test.name] = biggest_num
+      end
+      answer = all_districts.sort_by {|k, v| v}.reverse.to_a
+      answer[0][1] = truncate(answer[0][1])
+
+      return answer.first
+    end
+
   end
 
   private
@@ -141,7 +295,16 @@ class HeadcountAnalyst
   def is_correlation?(correlation_results)
     number_true = correlation_results.count {|x| x == true}
     result = number_true.to_f / correlation_results.count
-    
+
     result > 0.7 ? true : false
   end
+
+end
+
+class UnknownDataError < Exception
+
+end
+
+class InsufficientInformationError < Exception
+
 end
