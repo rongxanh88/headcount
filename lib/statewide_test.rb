@@ -45,7 +45,6 @@ class StatewideTest
   end
 
   def proficient_for_subject_by_grade_in_year(subject, grade, year)
-    
     check_for_data_and_grade_errors(subject, grade, year)
 
     answer = 0
@@ -60,7 +59,6 @@ class StatewideTest
   end
 
   def proficient_for_subject_by_race_in_year(subject, race, year)
-    
     check_for_data_and_race_errors(subject, race, year)
 
     if subject == :math
@@ -90,7 +88,6 @@ class StatewideTest
       :hispanic, :"native american", :"two or more", :white
     ]
     subjects = [:math, :reading, :writing]
-    
     if !races.include?(race)
       raise UnknownDataError.new
     elsif !subjects.include?(subject)
@@ -99,13 +96,10 @@ class StatewideTest
       raise UnknownDataError.new
     end
   end
-  
 end
 
 class UnknownDataError < Exception
-
 end
 
 class UnknownRaceError < Exception
-  
 end

@@ -49,19 +49,22 @@ class HeadcountAnalyst
     truncate(district_kindergarten_variation / district_graduation_variation)
   end
 
-  def kindergarten_participation_correlates_with_high_school_graduation(district)
-    if !district[:across].nil?
-      enrollments = district[:across].map do |district_name|
+  def kindergarten_participation_correlates_with_high_school_graduation(dist)
+    if !dist[:across].nil?
+      enrollments = dist[:across].map do |district_name|
         get_enrollment(district_name)
       end
       return correlation_across_districts(enrollments)
     end
-    name = district[:for]
+    name = dist[:for]
     result = false
     if name == "STATEWIDE"
-      result = correlation_across_districts(district_repo.enrollments.enrollments)
+      result = correlation_across_districts(
+        district_repo.enrollments.enrollments
+        )
     else
-      correlation = kindergarten_participation_against_high_school_graduation(name)
+      correlation =
+        kindergarten_participation_against_high_school_graduation(name)
       result = true if correlation < 1.5 and correlation > 0.6
     end
     result
@@ -78,7 +81,8 @@ class HeadcountAnalyst
 
   def calculate_all_subjects(args)
     grade = args[:grade]
-    weight = args[:weighting] || {:math => 1.0/3, :reading => 1.0/3, :writing => 1.0/3}
+    weight = args[:weighting] ||
+      {:math => 1.0/3, :reading => 1.0/3, :writing => 1.0/3}
 
     if grade == 3
       all_districts = {}
@@ -87,13 +91,14 @@ class HeadcountAnalyst
         scores = Hash.new
 
         statewide_test.third_grade_data.each do |year, subjects|
-          
           score = (
-            (statewide_test.third_grade_data[year][:math] * weight[:math]) +
-            (statewide_test.third_grade_data[year][:reading] * weight[:reading]) +
-            (statewide_test.third_grade_data[year][:writing] * weight[:writing])
+            (statewide_test.third_grade_data[year][:math] *
+              weight[:math]) +
+            (statewide_test.third_grade_data[year][:reading] *
+              weight[:reading]) +
+            (statewide_test.third_grade_data[year][:writing] *
+              weight[:writing])
             )
-            
           scores[year] = score if score != 0
         end
 
@@ -124,9 +129,12 @@ class HeadcountAnalyst
         statewide_test.eighth_grade_data.each do |year, subjects|
 
           score = (
-            (statewide_test.eighth_grade_data[year][:math] * weight[:math]) +
-            (statewide_test.eighth_grade_data[year][:reading] * weight[:reading]) +
-            (statewide_test.eighth_grade_data[year][:writing] * weight[:writing])
+            (statewide_test.eighth_grade_data[year][:math] *
+              weight[:math]) +
+            (statewide_test.eighth_grade_data[year][:reading] *
+              weight[:reading]) +
+            (statewide_test.eighth_grade_data[year][:writing] *
+              weight[:writing])
             )
 
           scores[year] = score if score != 0
@@ -170,7 +178,6 @@ class HeadcountAnalyst
         statewide_test.third_grade_data.each do |year, value|
           score = statewide_test.third_grade_data[year][subject]
           scores[year] = score if score != 0
-          
         end
         if scores.count > 1
           scores = scores.to_a
@@ -227,9 +234,13 @@ class HeadcountAnalyst
     enrollment1 = get_enrollment(district1)
     enrollment2 = get_enrollment(other[:against])
     average_1 = average(
-      add_graduation_rates(enrollment1), count_graduation_values(enrollment1))
+      add_graduation_rates(
+        enrollment1), count_graduation_values(enrollment1)
+        )
     average_2 =
-      average(add_graduation_rates(enrollment2), count_graduation_values(enrollment2))
+      average(add_graduation_rates(
+        enrollment2), count_graduation_values(enrollment2)
+        )
     return 0 if average_2 == 0
     truncate(average_1 / average_2)
   end
@@ -271,7 +282,9 @@ class HeadcountAnalyst
   end
 
   def add_graduation_rates(enrollment)
-    enrollment.high_school_graduation_rates.values.reduce(0) {|sum,num| sum + num}
+    enrollment.high_school_graduation_rates.values.reduce(0) {|sum,num|
+      sum + num
+    }
   end
 
   def count_graduation_values(enrollment)

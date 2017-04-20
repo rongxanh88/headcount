@@ -27,7 +27,6 @@ module Parser
       def get_data(file_name)
         contents = CSV.open(file_name, headers: true,
         header_converters: :symbol)
-        
         if file_name == "./data/Kindergartners in full-day program.csv"
           @enrollments = create_enrollments_from(contents)
           contents.rewind
@@ -125,7 +124,7 @@ module Parser
         end
         statewide_tests
       end
-      
+
       def add_eighth_grade_data(contents, statewide_tests)
         contents.each do |row|
           index = statewide_tests.find_index { |statewide_test|
@@ -147,12 +146,12 @@ module Parser
           index = statewide_tests.find_index { |statewide_test|
             statewide_test.name == row[:location]
           }
-          if statewide_tests[index].math_data.has_key?(race_ethnicity(row))
-            statewide_tests[index].math_data[race_ethnicity(row)][year(row)] =
+          if statewide_tests[index].math_data.has_key?(race(row))
+            statewide_tests[index].math_data[race(row)][year(row)] =
               {:math => data(row)}
           else
             statewide_tests[index]
-              .math_data[race_ethnicity(row)] = 
+              .math_data[race(row)] =
                 {year(row) => {:math => data(row)}}
           end
         end
@@ -164,12 +163,12 @@ module Parser
           index = statewide_tests.find_index { |statewide_test|
             statewide_test.name == row[:location]
           }
-          if statewide_tests[index].reading_data.has_key?(race_ethnicity(row))
-            statewide_tests[index].reading_data[race_ethnicity(row)][year(row)] =
+          if statewide_tests[index].reading_data.has_key?(race(row))
+            statewide_tests[index].reading_data[race(row)][year(row)] =
               {:reading => data(row)}
           else
             statewide_tests[index]
-              .reading_data[race_ethnicity(row)] = 
+              .reading_data[race(row)] =
                 {year(row) => {:reading => data(row)}}
           end
         end
@@ -182,11 +181,11 @@ module Parser
             statewide_test.name == row[:location]
           }
           if has_race_key_for_writing_data?(statewide_tests[index], row)
-            statewide_tests[index].writing_data[race_ethnicity(row)][year(row)] =
+            statewide_tests[index].writing_data[race(row)][year(row)] =
               {:writing => data(row)}
           else
             statewide_tests[index]
-              .writing_data[race_ethnicity(row)] = 
+              .writing_data[race(row)] =
                 {year(row) => {:writing => data(row)}}
           end
         end
@@ -194,10 +193,10 @@ module Parser
       end
 
       def has_race_key_for_writing_data?(statewide_test, row)
-        statewide_test.writing_data.has_key?(race_ethnicity(row))
+        statewide_test.writing_data.has_key?(race(row))
       end
 
-      def race_ethnicity(row)
+      def race(row)
         row[:race_ethnicity].downcase.to_sym
       end
 
@@ -264,7 +263,7 @@ module Parser
             economic_profile.name == row[:location]
           }
           if row[:dataformat] == "Percent"
-            economic_profiles[index].poverty_data[row[:timeframe].to_i] =
+            economic_profiles[index].poverty_data[year(row)] =
               row[:data].to_f
           end
         end
@@ -281,21 +280,21 @@ module Parser
 
             if row[:dataformat] == "Percent"
 
-              if economic_profiles[index].lunch_data.has_key?(row[:timeframe].to_i)
-                economic_profiles[index].lunch_data[row[:timeframe].to_i][:percentage] =
+              if economic_profiles[index].lunch_data.has_key?(year(row))
+                economic_profiles[index].lunch_data[year(row)][:percentage] =
                   row[:data].to_f
               else
-                economic_profiles[index].lunch_data[row[:timeframe].to_i] =
+                economic_profiles[index].lunch_data[year(row)] =
                   {:percentage => row[:data].to_f}
               end
 
             elsif row[:dataformat] == "Number"
 
-              if economic_profiles[index].lunch_data.has_key?(row[:timeframe].to_i)
-                economic_profiles[index].lunch_data[row[:timeframe].to_i][:total] =
+              if economic_profiles[index].lunch_data.has_key?(year(row))
+                economic_profiles[index].lunch_data[year(row)][:total] =
                   row[:data].to_f
               else
-                economic_profiles[index].lunch_data[row[:timeframe].to_i] =
+                economic_profiles[index].lunch_data[year(row)] =
                   {:total => row[:data].to_f}
               end
 
@@ -310,7 +309,7 @@ module Parser
           index = economic_profiles.find_index { |economic_profile|
             economic_profile.name == row[:location]
           }
-          economic_profiles[index].title_i_data[row[:timeframe].to_i] =
+          economic_profiles[index].title_i_data[year(row)] =
             row[:data].to_f
         end
         economic_profiles
@@ -318,6 +317,10 @@ module Parser
 
       def years(row)
         row[:timeframe].split("-").map {|year| year.to_i}
+      end
+
+      def year(row)
+        row[:timeframe].to_i
       end
     end
   end
