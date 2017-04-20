@@ -8,8 +8,10 @@ class Enrollment
 
   def initialize(input)
     @name = input[:name]
-    @kindergarten_participation = input[:kindergarten_participation] || Hash.new
-    @high_school_graduation_rates = input[:high_school_graduation_rates] || Hash.new
+    @kindergarten_participation = input[:kindergarten_participation] ||
+      Hash.new
+    @high_school_graduation_rates = input[:high_school_graduation_rates] ||
+      Hash.new
   end
 
   def kindergarten_participation_by_year

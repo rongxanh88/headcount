@@ -11,11 +11,11 @@ class EconomicProfileRepository
 
   def load_data(files)
     median_income_file = files[:economic_profile][:median_household_income]
-    children_in_poverty_file = files[:economic_profile][:children_in_poverty]
+    poverty_file = files[:economic_profile][:children_in_poverty]
     lunch_file = files[:economic_profile][:free_or_reduced_price_lunch]
     title_i_file = files[:economic_profile][:title_i]
     @economic_profiles = Parser::EconomicParser.get_data(median_income_file)
-    @economic_profiles = Parser::EconomicParser.get_data(children_in_poverty_file)
+    @economic_profiles = Parser::EconomicParser.get_data(poverty_file)
     @economic_profiles = Parser::EconomicParser.get_data(lunch_file)
     @economic_profiles = Parser::EconomicParser.get_data(title_i_file)
   end

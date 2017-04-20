@@ -41,7 +41,8 @@ class HeadcountAnalyst
   def kindergarten_participation_against_high_school_graduation(district)
     district_kindergarten_variation =
       kindergarten_participation_rate_variation(
-        district, :against => STATE)
+        district, :against => STATE
+        )
 
     district_graduation_variation =
       graduation_rate_variation(district, :against => STATE)
@@ -50,7 +51,7 @@ class HeadcountAnalyst
   end
 
   def kindergarten_participation_correlates_with_high_school_graduation(dist)
-    if !dist[:across].nil?
+    unless dist[:across].nil?
       enrollments = dist[:across].map do |district_name|
         get_enrollment(district_name)
       end
@@ -63,9 +64,7 @@ class HeadcountAnalyst
         district_repo.enrollments.enrollments
         )
     else
-      correlation =
-        kindergarten_participation_against_high_school_graduation(name)
-      result = true if correlation < 1.5 and correlation > 0.6
+      result = single_district_correlation?(name)
     end
     result
   end
@@ -91,23 +90,12 @@ class HeadcountAnalyst
         scores = Hash.new
 
         statewide_test.third_grade_data.each do |year, subjects|
-          score = (
-            (statewide_test.third_grade_data[year][:math] *
-              weight[:math]) +
-            (statewide_test.third_grade_data[year][:reading] *
-              weight[:reading]) +
-            (statewide_test.third_grade_data[year][:writing] *
-              weight[:writing])
-            )
+          score = weighted_score(statewide_test, year, weight)
           scores[year] = score if score != 0
         end
 
         if scores.count > 1
-          scores = scores.to_a
-          biggest_num = average(
-            (scores.last.last - scores.first.last),
-            (scores.last.first - scores.first.first)
-            )
+          biggest_num = biggest_growth(scores)
         else
           biggest_num = 0
         end
@@ -128,33 +116,20 @@ class HeadcountAnalyst
 
         statewide_test.eighth_grade_data.each do |year, subjects|
 
-          score = (
-            (statewide_test.eighth_grade_data[year][:math] *
-              weight[:math]) +
-            (statewide_test.eighth_grade_data[year][:reading] *
-              weight[:reading]) +
-            (statewide_test.eighth_grade_data[year][:writing] *
-              weight[:writing])
-            )
+          score = weighted_score(statewide_test, year, weight)
 
           scores[year] = score if score != 0
         end
 
         if scores.count > 1
-          scores = scores.to_a
-          biggest_num = average(
-            (scores.last.last - scores.first.last),
-            (scores.last.first - scores.first.first)
-            )
+          biggest_num = biggest_growth(scores)
         else
           biggest_num = 0
         end
 
         all_districts[statewide_test.name] = biggest_num
-
       end
       answer = all_districts.sort_by {|k, v| v}.reverse.to_a
-
       while answer[0][1] > 0.16 do
         answer.shift
       end
@@ -180,11 +155,7 @@ class HeadcountAnalyst
           scores[year] = score if score != 0
         end
         if scores.count > 1
-          scores = scores.to_a
-          biggest_num = average(
-            (scores.last.last - scores.first.last),
-            (scores.last.first - scores.first.first)
-            )
+          biggest_num = biggest_growth(scores)
         else
           biggest_num = 0
         end
@@ -209,11 +180,7 @@ class HeadcountAnalyst
         end
 
         if scores.count > 1
-          scores = scores.to_a
-          biggest_num = average(
-            (scores.last.last - scores.first.last),
-            (scores.last.first - scores.first.first)
-            )
+          biggest_num = biggest_growth(scores)
         else
           biggest_num = 0
         end
@@ -310,6 +277,31 @@ class HeadcountAnalyst
     result = number_true.to_f / correlation_results.count
 
     result > 0.7 ? true : false
+  end
+
+  def single_district_correlation?(district)
+    correlation =
+        kindergarten_participation_against_high_school_graduation(district)
+    return true if correlation < 1.5 and correlation > 0.6
+  end
+
+  def weighted_score(statewide_test, year, weight)
+    return score = (
+      (statewide_test.third_grade_data[year][:math] *
+        weight[:math]) +
+      (statewide_test.third_grade_data[year][:reading] *
+        weight[:reading]) +
+      (statewide_test.third_grade_data[year][:writing] *
+        weight[:writing])
+    )
+  end
+
+  def biggest_growth(scores)
+    numbers = scores.to_a
+    biggest_num = average(
+      (numbers.last.last - numbers.first.last),
+      (numbers.last.first - numbers.first.first)
+    )
   end
 
 end

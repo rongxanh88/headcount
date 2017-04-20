@@ -80,7 +80,7 @@ module Parser
   class StatewideTestParser
 
     class << self
-
+      
       def get_data(file)
         contents = CSV.open(
           file, headers: true, header_converters: :symbol)

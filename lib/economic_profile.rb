@@ -28,7 +28,6 @@ class EconomicProfile
 
     incomes_from_year.compact!
     number_of_incomes = incomes_from_year.count
-    
     raise UnknownDataError.new if number_of_incomes == 0
 
     average(incomes_from_year.reduce(:+), number_of_incomes)
